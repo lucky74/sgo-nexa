@@ -7,7 +7,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --mercure-purple: #4b0082; /* Warna Ungu Khas Mercure */
+            --mercure-purple: #4b0082;
             --mercure-gold: #c5a059;
             --light-bg: #f8f5fa;
         }
@@ -15,65 +15,80 @@
             font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; 
             background-color: var(--light-bg); color: #333; padding-bottom: 120px;
         }
-        /* Header */
+
+        /* HEADER DENGAN BACKGROUND FOTO */
         .header {
-            background: white; padding: 25px 15px; text-align: center;
-            border-bottom: 3px solid var(--mercure-purple);
+            position: relative;
+            height: 180px;
+            background-image: linear-gradient(rgba(75, 0, 130, 0.6), rgba(0, 0, 0, 0.7)), 
+                              url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            border-bottom: 4px solid var(--mercure-gold);
         }
-        .logo-placeholder { 
-            font-size: 24px; font-weight: bold; color: var(--mercure-purple);
-            letter-spacing: 2px; margin-bottom: 5px;
+        .logo-text { 
+            font-size: 32px; font-weight: 800; letter-spacing: 4px; 
+            margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
-        .hotel-name { font-size: 13px; color: #666; font-weight: 500; }
+        .hotel-name { 
+            font-size: 11px; font-weight: 400; letter-spacing: 1px;
+            margin-top: 5px; text-transform: uppercase;
+        }
 
         /* Category Tabs */
         .tabs {
             display: flex; overflow-x: auto; background: white;
-            padding: 10px; gap: 10px; position: sticky; top: 0; z-index: 100;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            padding: 12px; gap: 10px; position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .tab-btn {
             padding: 8px 18px; border-radius: 20px; border: 1px solid var(--mercure-purple);
             background: white; color: var(--mercure-purple); font-size: 13px;
-            font-weight: 600; cursor: pointer; white-space: nowrap;
+            font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.3s;
         }
-        .tab-btn.active {
-            background: var(--mercure-purple); color: white;
-        }
+        .tab-btn.active { background: var(--mercure-purple); color: white; }
 
         /* Menu Grid */
         .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
         .menu-card {
             background: white; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 4px 12px rgba(75, 0, 130, 0.1); position: relative;
-            display: none; /* Hidden by default, shown by category */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); position: relative;
+            display: none;
         }
-        .menu-card.show { display: block; }
+        .menu-card.show { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         .menu-img { width: 100%; height: 110px; object-fit: cover; }
         .menu-info { padding: 10px; }
-        .menu-title { font-size: 14px; font-weight: bold; margin: 0; height: 38px; overflow: hidden; }
+        .menu-title { font-size: 14px; font-weight: bold; margin: 0; height: 38px; color: #222; }
         .menu-price { color: var(--mercure-purple); font-size: 13px; font-weight: 700; margin: 5px 0; }
         
         .note-input {
             width: 85%; border: 1px solid #ddd; border-radius: 4px;
             font-size: 10px; padding: 5px; margin-top: 5px; outline: none;
         }
-
         .add-btn {
             background: var(--mercure-purple); color: white; border: none;
             width: 32px; height: 32px; border-radius: 50%; font-size: 20px;
             position: absolute; bottom: 8px; right: 8px; cursor: pointer;
         }
 
+        /* Footer */
         .dev-footer {
-            text-align: center; font-size: 10px; color: #888; padding: 20px 0;
+            text-align: center; font-size: 10px; color: #888; padding: 25px 0;
             background: white; margin-top: 20px; border-top: 1px solid #eee;
         }
 
         /* Order Panel */
         .footer-action {
             position: fixed; bottom: 0; left: 0; right: 0;
-            padding: 15px; background: white; box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            padding: 15px; background: white; box-shadow: 0 -8px 20px rgba(0,0,0,0.1);
             z-index: 1000; display: none;
         }
         .order-btn {
@@ -86,7 +101,7 @@
 <body>
 
     <div class="header">
-        <div class="logo-placeholder">MERCURE</div>
+        <h1 class="logo-text">MERCURE</h1>
         <div class="hotel-name">HOTELS BANDUNG NEXA SUPRATAMAN</div>
     </div>
 
@@ -107,7 +122,6 @@
                 <button class="add-btn" onclick="tambahItem('Caesar Salad', 45000, this)">+</button>
             </div>
         </div>
-
         <div class="menu-card" data-category="Main Course">
             <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300" class="menu-img">
             <div class="menu-info">
@@ -115,26 +129,6 @@
                 <p class="menu-price">185.000</p>
                 <input type="text" class="note-input" placeholder="Catatan...">
                 <button class="add-btn" onclick="tambahItem('Sirloin Steak', 185000, this)">+</button>
-            </div>
-        </div>
-
-        <div class="menu-card" data-category="Dessert">
-            <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=300" class="menu-img">
-            <div class="menu-info">
-                <p class="menu-title">Lava Cake</p>
-                <p class="menu-price">40.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
-                <button class="add-btn" onclick="tambahItem('Lava Cake', 40000, this)">+</button>
-            </div>
-        </div>
-
-        <div class="menu-card" data-category="Drink">
-            <img src="https://images.unsplash.com/photo-1544145945-f904253d0c7b?w=300" class="menu-img">
-            <div class="menu-info">
-                <p class="menu-title">Iced Lychee Tea</p>
-                <p class="menu-price">35.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
-                <button class="add-btn" onclick="tambahItem('Iced Lychee Tea', 35000, this)">+</button>
             </div>
         </div>
     </div>
@@ -153,28 +147,19 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-
         let keranjang = {};
 
         function filterMenu(category, btn) {
-            // Update Tab Button UI
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-
-            // Filter Cards
             document.querySelectorAll('.menu-card').forEach(card => {
-                if (card.getAttribute('data-category') === category) {
-                    card.classList.add('show');
-                } else {
-                    card.classList.remove('show');
-                }
+                card.classList.toggle('show', card.getAttribute('data-category') === category);
             });
         }
 
         function tambahItem(nama, harga, btnElement) {
             const card = btnElement.parentElement;
             const catatan = card.querySelector('.note-input').value || "Tidak ada";
-
             if (keranjang[nama]) {
                 keranjang[nama].qty += 1;
                 if (catatan !== "Tidak ada") keranjang[nama].note = catatan;
@@ -182,8 +167,6 @@
                 keranjang[nama] = { harga: harga, qty: 1, note: catatan };
             }
             updateUI();
-            
-            // Feedback visual kecil
             btnElement.innerText = "✓";
             setTimeout(() => { btnElement.innerText = "+"; }, 500);
         }
@@ -191,13 +174,11 @@
         function updateUI() {
             const footer = document.getElementById('footerOrder');
             const summary = document.getElementById('totalSummary');
-            let totalItem = 0; let subtotal = 0;
-
+            let totalItem = 0, subtotal = 0;
             for (let item in keranjang) {
                 totalItem += keranjang[item].qty;
                 subtotal += (keranjang[item].harga * keranjang[item].qty);
             }
-
             if (totalItem > 0) {
                 footer.style.display = 'block';
                 summary.innerText = `${totalItem} Item | Rp ${subtotal.toLocaleString()}`;
@@ -205,28 +186,16 @@
         }
 
         function kirimPesanan() {
-            let subtotal = 0;
-            let teksPesanan = "📋 *PESANAN BARU*:\n\n";
-
+            let subtotal = 0, teksPesanan = "📋 *PESANAN BARU*:\n\n";
             for (let item in keranjang) {
-                let cost = keranjang[item].harga * keranjang[item].qty;
-                subtotal += cost;
-                teksPesanan += `🔹 *${item}* (x${keranjang[item].qty})\n`;
-                teksPesanan += `   📝 Note: ${keranjang[item].note}\n\n`;
+                subtotal += (keranjang[item].harga * keranjang[item].qty);
+                teksPesanan += `🔹 *${item}* (x${keranjang[item].qty})\n📝 Note: ${keranjang[item].note}\n\n`;
             }
-
             const tax = subtotal * 0.21;
-            const totalFinal = subtotal + tax;
-
-            teksPesanan += `--------------------------\n`;
-            teksPesanan += `Subtotal: Rp ${subtotal.toLocaleString()}\n`;
-            teksPesanan += `Tax & Service (21%): Rp ${tax.toLocaleString()}\n`;
-            teksPesanan += `*TOTAL AKHIR: Rp ${totalFinal.toLocaleString()}*`;
-
+            teksPesanan += `--------------------------\nSubtotal: Rp ${subtotal.toLocaleString()}\nTax & Svc (21%): Rp ${tax.toLocaleString()}\n*TOTAL: Rp ${(subtotal + tax).toLocaleString()}*`;
             tg.sendData(teksPesanan);
             tg.close();
         }
     </script>
 </body>
 </html>
-
