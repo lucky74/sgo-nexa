@@ -119,7 +119,7 @@
             <div class="menu-info">
                 <p class="menu-title">Salad Segar</p>
                 <p class="menu-price">50.000</p>
-                <input type="text" class="note-input" placeholder="Catatan (contoh: Tidak pedas)...">
+                <input type="text" class="note-input" placeholder="Catatan (contoh: Dressing dipisah)...">
                 <button class="add-btn" onclick="tambahItem('Salad Segar', 50000, this)">+</button>
             </div>
         </div>
@@ -140,7 +140,7 @@
             <div class="menu-info">
                 <p class="menu-title">Nasi Goreng Kambing</p>
                 <p class="menu-price">100.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
+                <input type="text" class="note-input" placeholder="Catatan (contoh: Pedas)...">
                 <button class="add-btn" onclick="tambahItem('Nasi Goreng Kambing', 100000, this)">+</button>
             </div>
         </div>
@@ -160,7 +160,7 @@
             <div class="menu-info">
                 <p class="menu-title">Steak Sapi</p>
                 <p class="menu-price">250.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
+                <input type="text" class="note-input" placeholder="Catatan (contoh: Medium Rare)...">
                 <button class="add-btn" onclick="tambahItem('Steak Sapi', 250000, this)">+</button>
             </div>
         </div>
@@ -181,7 +181,7 @@
             <div class="menu-info">
                 <p class="menu-title">Kopi Tubruk</p>
                 <p class="menu-price">35.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
+                <input type="text" class="note-input" placeholder="Catatan (contoh: Tanpa Gula)...">
                 <button class="add-btn" onclick="tambahItem('Kopi Tubruk', 35000, this)">+</button>
             </div>
         </div>
@@ -223,22 +223,12 @@
         }
 
         function tambahItem(nama, harga, btnElement) {
-            // Mencari elemen input di dalam container kartu menu yang sama
-            const parent = btnElement.closest('.menu-info');
-            const inputCatatan = parent.querySelector('.note-input');
-            const teksCatatan = inputCatatan.value.trim() || "Tanpa catatan";
-
             if (keranjang[nama]) {
                 keranjang[nama].qty += 1;
-                // Jika user mengetik catatan baru, kita perbarui catatannya
-                if (teksCatatan !== "Tanpa catatan") {
-                    keranjang[nama].note = teksCatatan;
-                }
             } else {
                 keranjang[nama] = { 
                     harga: harga, 
-                    qty: 1, 
-                    note: teksCatatan 
+                    qty: 1
                 };
             }
             
@@ -273,13 +263,28 @@
             let subtotal = 0;
             let teksPesanan = "📋 *PESANAN BARU (LUCKY)*:\n\n";
             
+            // Ambil semua card untuk mencari input catatan terbaru
+            const allCards = document.querySelectorAll('.menu-card');
+
             for (let item in keranjang) {
                 const itemData = keranjang[item];
                 const itemTotal = itemData.harga * itemData.qty;
                 subtotal += itemTotal;
                 
+                // Cari input catatan di UI yang sesuai dengan nama menu ini
+                let catatanTerbaru = "Tanpa catatan";
+                allCards.forEach(card => {
+                    const title = card.querySelector('.menu-title').innerText;
+                    if (title === item) {
+                        const inputVal = card.querySelector('.note-input').value.trim();
+                        if (inputVal !== "") {
+                            catatanTerbaru = inputVal;
+                        }
+                    }
+                });
+                
                 teksPesanan += `🔹 *${item}* (x${itemData.qty})\n`;
-                teksPesanan += `   Catatan: _${itemData.note}_\n\n`;
+                teksPesanan += `   Catatan: ${catatanTerbaru}\n\n`;
             }
             
             const tax = subtotal * 0.21;
@@ -290,7 +295,6 @@
             teksPesanan += `Tax & Svc (21%): Rp ${tax.toLocaleString('id-ID')}\n`;
             teksPesanan += `*TOTAL AKHIR: Rp ${grandTotal.toLocaleString('id-ID')}*`;
             
-            // Mengirim data string ke bot Telegram
             tg.sendData(teksPesanan);
             tg.close();
         }
