@@ -6,66 +6,145 @@
     <title>Menu Mercure Nexa Supratman</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; text-align: center; }
-        .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .btn { background-color: #0088cc; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px; }
-        .btn:active { background-color: #006699; }
-        h2 { color: #333; }
-        .item-list { text-align: left; }
+        :root {
+            --primary-gold: #c5a059;
+            --dark-bg: #1a1a1a;
+            --card-bg: #ffffff;
+        }
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; padding: 0; background-color: #f8f9fa; color: #333;
+        }
+        .header {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');
+            background-size: cover; background-position: center;
+            color: white; padding: 40px 20px; text-align: center;
+        }
+        .categories {
+            display: flex; justify-content: center; gap: 10px; padding: 15px;
+            overflow-x: auto; white-space: nowrap; background: white; position: sticky; top: 0; z-index: 100;
+        }
+        .cat-btn {
+            border: 1px solid #ddd; padding: 8px 15px; border-radius: 20px;
+            background: white; font-size: 14px; font-weight: 500;
+        }
+        .menu-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px;
+        }
+        .menu-card {
+            background: var(--card-bg); border-radius: 12px; overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative;
+        }
+        .menu-img {
+            width: 100%; height: 120px; object-fit: cover; background-color: #eee;
+        }
+        .menu-info { padding: 10px; }
+        .menu-title { font-size: 14px; font-weight: bold; margin: 0; color: #222; }
+        .menu-price { color: var(--primary-gold); font-size: 13px; font-weight: 600; margin-top: 5px; }
+        
+        .add-btn {
+            background: var(--primary-gold); color: white; border: none;
+            width: 28px; height: 28px; border-radius: 50%; font-size: 18px;
+            position: absolute; bottom: 10px; right: 10px; cursor: pointer;
+        }
+
+        .footer-action {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            padding: 20px; background: white; box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            display: none; /* Muncul jika ada pesanan */
+        }
+        .order-btn {
+            background: var(--primary-gold); color: white; border: none;
+            width: 100%; padding: 15px; border-radius: 12px;
+            font-size: 16px; font-weight: bold; display: flex; justify-content: space-between;
+        }
     </style>
 </head>
 <body>
 
-    <h2>🍽️ Menu Lucky</h2>
-    <p>Mercure Nexa Supratman</p>
+    <div class="header">
+        <h1 style="margin:0; font-size: 24px;">Sirloin MENU</h1>
+        <p style="margin:5px 0; font-size: 12px; opacity: 0.8;">Mercure Bandung Nexa Supratman</p>
+    </div>
 
-    <div class="item-list">
-        <div class="card">
-            <strong>Nasi Goreng Nexa</strong><br>
-            Harga: Rp 55.000
-            <button class="btn" onclick="tambahItem('Nasi Goreng Nexa')">Pilih</button>
+    <div class="categories">
+        <button class="cat-btn" style="background: #333; color: white;">Breakfast</button>
+        <button class="cat-btn">Main Course</button>
+        <button class="cat-btn">Drinks</button>
+    </div>
+
+    <div class="menu-grid">
+        <div class="menu-card">
+            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300" class="menu-img">
+            <div class="menu-info">
+                <p class="menu-title">Sirloin Steak</p>
+                <p class="menu-price">Rp 185.000</p>
+                <button class="add-btn" onclick="tambahItem('Sirloin Steak', 185000)">+</button>
+            </div>
         </div>
-        <div class="card">
-            <strong>Es Teh Manis</strong><br>
-            Harga: Rp 15.000
-            <button class="btn" onclick="tambahItem('Es Teh Manis')">Pilih</button>
+        <div class="menu-card">
+            <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300" class="menu-img">
+            <div class="menu-info">
+                <p class="menu-title">Grill Chicken</p>
+                <p class="menu-price">Rp 120.000</p>
+                <button class="add-btn" onclick="tambahItem('Grill Chicken', 120000)">+</button>
+            </div>
+        </div>
+        <div class="menu-card">
+            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300" class="menu-img">
+            <div class="menu-info">
+                <p class="menu-title">Pizza Nexa</p>
+                <p class="menu-price">Rp 95.000</p>
+                <button class="add-btn" onclick="tambahItem('Pizza Nexa', 95000)">+</button>
+            </div>
         </div>
     </div>
 
-    <hr>
-    <div id="keranjang">
-        <strong>Keranjang:</strong> <span id="daftar-pesanan">Belum ada item</span>
+    <div style="height: 100px;"></div> <div class="footer-action" id="footerOrder">
+        <button class="order-btn" onclick="kirimPesanan()">
+            <span id="itemCount">1 Pesanan</span>
+            <span>Tentukan Pesanan ❯</span>
+        </button>
     </div>
-
-    <button class="btn" style="background-color: #28a745;" onclick="kirimPesanan()">✅ KONFIRMASI PESANAN</button>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Agar layar langsung penuh saat dibuka
+        tg.expand();
+        tg.MainButton.hide();
 
         let keranjang = [];
 
-        function tambahItem(nama) {
-            keranjang.push(nama);
-            document.getElementById('daftar-pesanan').innerText = keranjang.join(", ");
+        function tambahItem(nama, harga) {
+            keranjang.push({nama, harga});
+            updateUI();
+        }
+
+        function updateUI() {
+            const footer = document.getElementById('footerOrder');
+            const countLabel = document.getElementById('itemCount');
+            
+            if (keranjang.length > 0) {
+                footer.style.display = 'block';
+                countLabel.innerText = keranjang.length + " Pesanan";
+            }
         }
 
         function kirimPesanan() {
-            if (keranjang.length === 0) {
-                alert("Silakan pilih menu terlebih dahulu!");
-                return;
-            }
+            if (keranjang.length === 0) return;
 
-            // Gabungkan data pesanan menjadi teks
-            const dataUntukBot = "Pesanan Baru:\n- " + keranjang.join("\n- ");
+            let rincian = "📋 *PESANAN BARU*:\n";
+            let total = 0;
+            keranjang.forEach(item => {
+                rincian += `- ${item.nama} (Rp ${item.harga.toLocaleString()})\n`;
+                total += item.harga;
+            });
+            rincian += `\n💰 *Total: Rp ${total.toLocaleString()}*`;
 
-            // INI KODE PALING PENTING: Mengirim data ke main.py di Ubuntu
-            tg.sendData(dataUntukBot);
-
-            // Tutup Web App secara otomatis setelah kirim
+            tg.sendData(rincian);
             tg.close();
         }
     </script>
 </body>
 </html>
+
 
