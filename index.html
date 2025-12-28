@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGO Nexa - Luxury Digital Menu</title>
+    <title>Lucky - Luxury Digital Menu</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -108,11 +108,21 @@
     <div class="tabs">
         <button class="tab-btn active" onclick="filterMenu('Appetizer', this)">Appetizer</button>
         <button class="tab-btn" onclick="filterMenu('Main Course', this)">Main Course</button>
-        <button class="tab-btn" onclick="filterMenu('Dessert', this)">Dessert</button>
         <button class="tab-btn" onclick="filterMenu('Drink', this)">Drink</button>
     </div>
 
     <div class="menu-grid" id="menuContainer">
+        
+        <div class="menu-card show" data-category="Appetizer">
+            <img src="https://i.ibb.co.com/Mm7Nfrp/image.jpg" class="menu-img">
+            <div class="menu-info">
+                <p class="menu-title">Salad Segar</p>
+                <p class="menu-price">50.000</p>
+                <input type="text" class="note-input" placeholder="Catatan...">
+                <button class="add-btn" onclick="tambahItem('Salad Segar', 50000, this)">+</button>
+            </div>
+        </div>
+
         <div class="menu-card show" data-category="Appetizer">
             <img src="https://images.unsplash.com/photo-1541529086526-db283c563270?w=300" class="menu-img">
             <div class="menu-info">
@@ -122,6 +132,37 @@
                 <button class="add-btn" onclick="tambahItem('Caesar Salad', 45000, this)">+</button>
             </div>
         </div>
+
+        <div class="menu-card" data-category="Main Course">
+            <img src="https://i.ibb.co.com/8DW0v0DT/image.jpg" class="menu-img">
+            <div class="menu-info">
+                <p class="menu-title">Nasi Goreng Kambing</p>
+                <p class="menu-price">100.000</p>
+                <input type="text" class="note-input" placeholder="Catatan...">
+                <button class="add-btn" onclick="tambahItem('Nasi Goreng Kambing', 100000, this)">+</button>
+            </div>
+        </div>
+
+        <div class="menu-card" data-category="Main Course">
+            <img src="https://i.ibb.co.com/JWX6rRsP/image.jpg" class="menu-img">
+            <div class="menu-info">
+                <p class="menu-title">Mie Goreng Spesial</p>
+                <p class="menu-price">100.000</p>
+                <input type="text" class="note-input" placeholder="Catatan...">
+                <button class="add-btn" onclick="tambahItem('Mie Goreng Spesial', 100000, this)">+</button>
+            </div>
+        </div>
+
+        <div class="menu-card" data-category="Main Course">
+            <img src="https://i.ibb.co.com/wNhk0XSf/image.jpg" class="menu-img">
+            <div class="menu-info">
+                <p class="menu-title">Steak Sapi</p>
+                <p class="menu-price">250.000</p>
+                <input type="text" class="note-input" placeholder="Catatan...">
+                <button class="add-btn" onclick="tambahItem('Steak Sapi', 250000, this)">+</button>
+            </div>
+        </div>
+
         <div class="menu-card" data-category="Main Course">
             <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300" class="menu-img">
             <div class="menu-info">
@@ -131,10 +172,21 @@
                 <button class="add-btn" onclick="tambahItem('Sirloin Steak', 185000, this)">+</button>
             </div>
         </div>
+
+        <div class="menu-card" data-category="Drink">
+            <img src="https://i.ibb.co.com/4Zdq72GP/image.jpg" class="menu-img">
+            <div class="menu-info">
+                <p class="menu-title">Aneka Minuman</p>
+                <p class="menu-price">35.000</p>
+                <input type="text" class="note-input" placeholder="Catatan...">
+                <button class="add-btn" onclick="tambahItem('Aneka Minuman', 35000, this)">+</button>
+            </div>
+        </div>
+
     </div>
 
     <div class="dev-footer">
-        Sentra Guest OS @ 2025 | SGO V1.0
+        Lucky Digital Menu | Sentra Guest OS @ 2025
     </div>
 
     <div class="footer-action" id="footerOrder">
