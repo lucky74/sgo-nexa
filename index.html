@@ -3,74 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu Mercure Nexa Supratman</title>
+    <title>SGO Nexa - Digital Menu</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
             --primary-gold: #c5a059;
             --dark-bg: #1a1a1a;
-            --card-bg: #ffffff;
+            --light-grey: #f4f4f4;
         }
         body { 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            margin: 0; padding: 0; background-color: #f8f9fa; color: #333;
+            font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; 
+            background-color: var(--light-grey); color: #333; padding-bottom: 120px;
         }
+        /* Header & Logo */
         .header {
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');
-            background-size: cover; background-position: center;
-            color: white; padding: 40px 20px; text-align: center;
+            background: #fff; padding: 20px; text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .categories {
-            display: flex; justify-content: center; gap: 10px; padding: 15px;
-            overflow-x: auto; white-space: nowrap; background: white; position: sticky; top: 0; z-index: 100;
-        }
-        .cat-btn {
-            border: 1px solid #ddd; padding: 8px 15px; border-radius: 20px;
-            background: white; font-size: 14px; font-weight: 500;
-        }
-        .menu-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px;
-        }
-        .menu-card {
-            background: var(--card-bg); border-radius: 12px; overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative;
-        }
-        .menu-img {
-            width: 100%; height: 120px; object-fit: cover; background-color: #eee;
-        }
-        .menu-info { padding: 10px; }
-        .menu-title { font-size: 14px; font-weight: bold; margin: 0; color: #222; }
-        .menu-price { color: var(--primary-gold); font-size: 13px; font-weight: 600; margin-top: 5px; }
+        .logo { width: 180px; margin-bottom: 10px; }
         
-        .add-btn {
-            background: var(--primary-gold); color: white; border: none;
-            width: 28px; height: 28px; border-radius: 50%; font-size: 18px;
-            position: absolute; bottom: 10px; right: 10px; cursor: pointer;
+        /* Menu Grid */
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
+        .menu-card {
+            background: white; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative;
+        }
+        .menu-img { width: 100%; height: 110px; object-fit: cover; }
+        .menu-info { padding: 10px; }
+        .menu-title { font-size: 14px; font-weight: bold; margin: 0; }
+        .menu-price { color: var(--primary-gold); font-size: 13px; font-weight: 600; margin: 5px 0; }
+        
+        /* Notes Input */
+        .note-input {
+            width: 80%; border: 1px solid #ddd; border-radius: 4px;
+            font-size: 11px; padding: 4px; margin-top: 5px;
         }
 
+        .add-btn {
+            background: var(--primary-gold); color: white; border: none;
+            width: 30px; height: 30px; border-radius: 50%; font-size: 20px;
+            position: absolute; bottom: 8px; right: 8px; cursor: pointer;
+        }
+
+        /* Footer & Developer Info */
+        .dev-footer {
+            text-align: center; font-size: 10px; color: #888; padding: 20px 0;
+            background: #fff; margin-top: 20px;
+        }
+
+        /* Order Panel */
         .footer-action {
             position: fixed; bottom: 0; left: 0; right: 0;
-            padding: 20px; background: white; box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
-            display: none; /* Muncul jika ada pesanan */
+            padding: 15px; background: white; box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            z-index: 1000; display: none;
         }
         .order-btn {
             background: var(--primary-gold); color: white; border: none;
             width: 100%; padding: 15px; border-radius: 12px;
-            font-size: 16px; font-weight: bold; display: flex; justify-content: space-between;
+            font-size: 14px; font-weight: bold; display: flex; justify-content: space-between;
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1 style="margin:0; font-size: 24px;">Sirloin MENU</h1>
-        <p style="margin:5px 0; font-size: 12px; opacity: 0.8;">Mercure Bandung Nexa Supratman</p>
-    </div>
-
-    <div class="categories">
-        <button class="cat-btn" style="background: #333; color: white;">Breakfast</button>
-        <button class="cat-btn">Main Course</button>
-        <button class="cat-btn">Drinks</button>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Logo_Mercure_Hotels.svg/1200px-Logo_Mercure_Hotels.svg.png" alt="Mercure Logo" class="logo">
+        <div style="font-size: 12px; color: #666;">Bandung Nexa Supratman</div>
     </div>
 
     <div class="menu-grid">
@@ -78,71 +76,99 @@
             <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300" class="menu-img">
             <div class="menu-info">
                 <p class="menu-title">Sirloin Steak</p>
-                <p class="menu-price">Rp 185.000</p>
-                <button class="add-btn" onclick="tambahItem('Sirloin Steak', 185000)">+</button>
+                <p class="menu-price">55.000</p>
+                <input type="text" id="note-Sirloin" class="note-input" placeholder="Catatan...">
+                <button class="add-btn" onclick="tambahItem('Sirloin Steak', 55000)">+</button>
             </div>
         </div>
         <div class="menu-card">
             <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300" class="menu-img">
             <div class="menu-info">
                 <p class="menu-title">Grill Chicken</p>
-                <p class="menu-price">Rp 120.000</p>
-                <button class="add-btn" onclick="tambahItem('Grill Chicken', 120000)">+</button>
-            </div>
-        </div>
-        <div class="menu-card">
-            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300" class="menu-img">
-            <div class="menu-info">
-                <p class="menu-title">Pizza Nexa</p>
-                <p class="menu-price">Rp 95.000</p>
-                <button class="add-btn" onclick="tambahItem('Pizza Nexa', 95000)">+</button>
+                <p class="menu-price">45.000</p>
+                <input type="text" id="note-Grill" class="note-input" placeholder="Catatan...">
+                <button class="add-btn" onclick="tambahItem('Grill Chicken', 45000)">+</button>
             </div>
         </div>
     </div>
 
-    <div style="height: 100px;"></div> <div class="footer-action" id="footerOrder">
+    <div class="dev-footer">
+        Sentra Guest OS @ 2025 | SGO V1.0
+    </div>
+
+    <div class="footer-action" id="footerOrder">
         <button class="order-btn" onclick="kirimPesanan()">
-            <span id="itemCount">1 Pesanan</span>
-            <span>Tentukan Pesanan ❯</span>
+            <span id="totalSummary">0 Item | Rp 0</span>
+            <span>Konfirmasi Pesanan ❯</span>
         </button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.MainButton.hide();
 
-        let keranjang = [];
+        let keranjang = {};
 
         function tambahItem(nama, harga) {
-            keranjang.push({nama, harga});
+            // Ambil catatan dari input (id diambil berdasarkan potongan nama depan)
+            const idInput = "note-" + nama.split(' ')[0];
+            const catatan = document.getElementById(idInput).value || "Tidak ada";
+
+            if (keranjang[nama]) {
+                keranjang[nama].qty += 1;
+                // Update catatan jika ada yang baru
+                if (catatan !== "Tidak ada") keranjang[nama].note = catatan;
+            } else {
+                keranjang[nama] = {
+                    harga: harga,
+                    qty: 1,
+                    note: catatan
+                };
+            }
             updateUI();
         }
 
         function updateUI() {
             const footer = document.getElementById('footerOrder');
-            const countLabel = document.getElementById('itemCount');
+            const summary = document.getElementById('totalSummary');
             
-            if (keranjang.length > 0) {
+            let totalItem = 0;
+            let subtotal = 0;
+
+            for (let item in keranjang) {
+                totalItem += keranjang[item].qty;
+                subtotal += (keranjang[item].harga * keranjang[item].qty);
+            }
+
+            if (totalItem > 0) {
                 footer.style.display = 'block';
-                countLabel.innerText = keranjang.length + " Pesanan";
+                summary.innerText = `${totalItem} Item | Rp ${subtotal.toLocaleString()}`;
             }
         }
 
         function kirimPesanan() {
-            if (keranjang.length === 0) return;
+            let subtotal = 0;
+            let teksPesanan = "📋 *DETAIL PESANAN*:\n\n";
 
-            let rincian = "📋 *PESANAN BARU*:\n";
-            let total = 0;
-            keranjang.forEach(item => {
-                rincian += `- ${item.nama} (Rp ${item.harga.toLocaleString()})\n`;
-                total += item.harga;
-            });
-            rincian += `\n💰 *Total: Rp ${total.toLocaleString()}*`;
+            for (let item in keranjang) {
+                let cost = keranjang[item].harga * keranjang[item].qty;
+                subtotal += cost;
+                teksPesanan += `🔹 *${item}* x${keranjang[item].qty}\n`;
+                teksPesanan += `   📝 Note: ${keranjang[item].note}\n\n`;
+            }
 
-            tg.sendData(rincian);
+            const tax = subtotal * 0.21;
+            const totalFinal = subtotal + tax;
+
+            teksPesanan += `--------------------------\n`;
+            teksPesanan += `Subtotal: Rp ${subtotal.toLocaleString()}\n`;
+            teksPesanan += `Tax & Service (21%): Rp ${tax.toLocaleString()}\n`;
+            teksPesanan += `*TOTAL AKHIR: Rp ${totalFinal.toLocaleString()}*`;
+
+            tg.sendData(teksPesanan);
             tg.close();
         }
     </script>
 </body>
 </html>
+
