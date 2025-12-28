@@ -1,98 +1,71 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Mercure Nexa Supratman</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --primary: #5a2d82; --secondary: #f8f9fa; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--secondary); margin: 0; padding: 15px; padding-bottom: 100px; }
-        .card { background: white; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 25px; }
-        .card img { width: 100%; height: 200px; object-fit: cover; }
-        .p-20 { padding: 20px; }
-        .title { font-size: 1.2rem; font-weight: 700; color: #333; margin-bottom: 5px; }
-        .price { color: #d32f2f; font-size: 1.1rem; font-weight: 600; margin-bottom: 10px; }
-        .controls { display: flex; align-items: center; gap: 15px; margin: 15px 0; }
-        .btn-qty { background: var(--primary); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; font-size: 20px; cursor: pointer; }
-        .qty-val { font-size: 1.2rem; font-weight: bold; width: 30px; text-align: center; }
-        textarea { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 10px; box-sizing: border-box; font-family: inherit; resize: none; margin-top: 5px; }
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; border-top: 1px solid #eee; display: flex; gap: 10px; flex-direction: column; }
-        .btn-send { background: var(--primary); color: white; border: none; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 1rem; }
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; text-align: center; }
+        .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn { background-color: #0088cc; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px; }
+        .btn:active { background-color: #006699; }
+        h2 { color: #333; }
+        .item-list { text-align: left; }
     </style>
 </head>
 <body>
-    <h2 style="text-align: center; color: var(--primary);">MERCURE NEXA MENU</h2>
 
-    <div class="card" id="item1">
-        <img src="https://i.ibb.co.com/TMFXxKt7/steak.jpg" alt="Sirloin Steak">
-        <div class="p-20">
-            <div class="title">Sirloin Australian Steak</div>
-            <div class="price">Rp 185.000</div>
-            <div class="controls">
-                <button class="btn-qty" onclick="changeQty('steak', -1)">-</button>
-                <span class="qty-val" id="qty-steak">0</span>
-                <button class="btn-qty" onclick="changeQty('steak', 1)">+</button>
-            </div>
-            <textarea id="note-steak" rows="2" placeholder="Catatan untuk Steak (misal: Medium Rare)..."></textarea>
+    <h2>🍽️ Menu Lucky</h2>
+    <p>Mercure Nexa Supratman</p>
+
+    <div class="item-list">
+        <div class="card">
+            <strong>Nasi Goreng Nexa</strong><br>
+            Harga: Rp 55.000
+            <button class="btn" onclick="tambahItem('Nasi Goreng Nexa')">Pilih</button>
+        </div>
+        <div class="card">
+            <strong>Es Teh Manis</strong><br>
+            Harga: Rp 15.000
+            <button class="btn" onclick="tambahItem('Es Teh Manis')">Pilih</button>
         </div>
     </div>
 
-    <div class="card" id="item2">
-        <img src="https://i.ibb.co.com/svdRcm5R/nasgor.jpg" alt="Nasi Goreng Kambing">
-        <div class="p-20">
-            <div class="title">Nasi Goreng Kambing</div>
-            <div class="price">Rp 95.000</div>
-            <div class="controls">
-                <button class="btn-qty" onclick="changeQty('nasgor', -1)">-</button>
-                <span class="qty-val" id="qty-nasgor">0</span>
-                <button class="btn-qty" onclick="changeQty('nasgor', 1)">+</button>
-            </div>
-            <textarea id="note-nasgor" rows="2" placeholder="Catatan untuk Nasi Goreng (misal: Pedas)..."></textarea>
-        </div>
+    <hr>
+    <div id="keranjang">
+        <strong>Keranjang:</strong> <span id="daftar-pesanan">Belum ada item</span>
     </div>
 
-    <div class="footer">
-        <button class="btn-send" onclick="submitOrder()">KIRIM PESANAN KE WAITER</button>
-    </div>
+    <button class="btn" style="background-color: #28a745;" onclick="kirimPesanan()">✅ KONFIRMASI PESANAN</button>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Agar layar langsung penuh saat dibuka
 
-        let orders = {
-            steak: 0,
-            nasgor: 0
-        };
+        let keranjang = [];
 
-        function changeQty(item, val) {
-            orders[item] = Math.max(0, orders[item] + val);
-            document.getElementById('qty-' + item).innerText = orders[item];
+        function tambahItem(nama) {
+            keranjang.push(nama);
+            document.getElementById('daftar-pesanan').innerText = keranjang.join(", ");
         }
 
-        function submitOrder() {
-            let result = "Daftar Pesanan:\n";
-            let totalItem = 0;
-
-            if (orders.steak > 0) {
-                let note = document.getElementById('note-steak').value || "Tanpa catatan";
-                result += `- Sirloin Steak (${orders.steak}x)\n  Note: ${note}\n`;
-                totalItem++;
-            }
-            
-            if (orders.nasgor > 0) {
-                let note = document.getElementById('note-nasgor').value || "Tanpa catatan";
-                result += `- Nasi Goreng Kambing (${orders.nasgor}x)\n  Note: ${note}\n`;
-                totalItem++;
-            }
-
-            if (totalItem === 0) {
-                alert("Silakan pilih minimal 1 menu sebelum memesan.");
+        function kirimPesanan() {
+            if (keranjang.length === 0) {
+                alert("Silakan pilih menu terlebih dahulu!");
                 return;
             }
 
-            tg.sendData(result);
+            // Gabungkan data pesanan menjadi teks
+            const dataUntukBot = "Pesanan Baru:\n- " + keranjang.join("\n- ");
+
+            // INI KODE PALING PENTING: Mengirim data ke main.py di Ubuntu
+            tg.sendData(dataUntukBot);
+
+            // Tutup Web App secara otomatis setelah kirim
             tg.close();
         }
     </script>
 </body>
-</html> 
+</html>
+
