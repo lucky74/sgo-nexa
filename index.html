@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGO Nexa - Luxury Digital Menu</title>
+    <title>Lucky - Luxury Digital Menu</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -119,7 +119,7 @@
             <div class="menu-info">
                 <p class="menu-title">Salad Segar</p>
                 <p class="menu-price">50.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
+                <input type="text" class="note-input" placeholder="Catatan (contoh: Tidak pedas)...">
                 <button class="add-btn" onclick="tambahItem('Salad Segar', 50000, this)">+</button>
             </div>
         </div>
@@ -223,45 +223,77 @@
         }
 
         function tambahItem(nama, harga, btnElement) {
-            const card = btnElement.parentElement;
-            const catatan = card.querySelector('.note-input').value || "Tidak ada";
+            // Mencari elemen input di dalam container kartu menu yang sama
+            const parent = btnElement.closest('.menu-info');
+            const inputCatatan = parent.querySelector('.note-input');
+            const teksCatatan = inputCatatan.value.trim() || "Tanpa catatan";
+
             if (keranjang[nama]) {
                 keranjang[nama].qty += 1;
-                if (catatan !== "Tidak ada") keranjang[nama].note = catatan;
+                // Jika user mengetik catatan baru, kita perbarui catatannya
+                if (teksCatatan !== "Tanpa catatan") {
+                    keranjang[nama].note = teksCatatan;
+                }
             } else {
-                keranjang[nama] = { harga: harga, qty: 1, note: catatan };
+                keranjang[nama] = { 
+                    harga: harga, 
+                    qty: 1, 
+                    note: teksCatatan 
+                };
             }
+            
             updateUI();
+            
+            // Animasi feedback visual
             btnElement.innerText = "✓";
-            setTimeout(() => { btnElement.innerText = "+"; }, 500);
+            btnElement.style.background = "#28a745";
+            setTimeout(() => { 
+                btnElement.innerText = "+"; 
+                btnElement.style.background = "var(--mercure-purple)";
+            }, 600);
         }
 
         function updateUI() {
             const footer = document.getElementById('footerOrder');
             const summary = document.getElementById('totalSummary');
             let totalItem = 0, subtotal = 0;
+            
             for (let item in keranjang) {
                 totalItem += keranjang[item].qty;
                 subtotal += (keranjang[item].harga * keranjang[item].qty);
             }
+            
             if (totalItem > 0) {
                 footer.style.display = 'block';
-                summary.innerText = `${totalItem} Item | Rp ${subtotal.toLocaleString()}`;
+                summary.innerText = `${totalItem} Item | Rp ${subtotal.toLocaleString('id-ID')}`;
             }
         }
 
         function kirimPesanan() {
-            let subtotal = 0, teksPesanan = "📋 *PESANAN BARU*:\n\n";
+            let subtotal = 0;
+            let teksPesanan = "📋 *PESANAN BARU (LUCKY)*:\n\n";
+            
             for (let item in keranjang) {
-                subtotal += (keranjang[item].harga * keranjang[item].qty);
-                teksPesanan += `🔹 *${item}* (x${keranjang[item].qty})\n📝 Note: ${keranjang[item].note}\n\n`;
+                const itemData = keranjang[item];
+                const itemTotal = itemData.harga * itemData.qty;
+                subtotal += itemTotal;
+                
+                teksPesanan += `🔹 *${item}* (x${itemData.qty})\n`;
+                teksPesanan += `   Catatan: _${itemData.note}_\n\n`;
             }
+            
             const tax = subtotal * 0.21;
-            teksPesanan += `--------------------------\nSubtotal: Rp ${subtotal.toLocaleString()}\nTax & Svc (21%): Rp ${tax.toLocaleString()}\n*TOTAL: Rp ${(subtotal + tax).toLocaleString()}*`;
+            const grandTotal = subtotal + tax;
+            
+            teksPesanan += `--------------------------\n`;
+            teksPesanan += `Subtotal: Rp ${subtotal.toLocaleString('id-ID')}\n`;
+            teksPesanan += `Tax & Svc (21%): Rp ${tax.toLocaleString('id-ID')}\n`;
+            teksPesanan += `*TOTAL AKHIR: Rp ${grandTotal.toLocaleString('id-ID')}*`;
+            
+            // Mengirim data string ke bot Telegram
             tg.sendData(teksPesanan);
             tg.close();
         }
     </script>
 </body>
 </html>
-
