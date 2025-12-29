@@ -13,14 +13,13 @@
         }
         body { 
             font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; 
-            background-color: var(--light-bg); color: #333; padding-bottom: 120px;
+            background-color: var(--light-bg); color: #333; padding-bottom: 140px;
         }
 
         /* HEADER */
         .header {
             position: relative;
             height: 180px;
-            /* Menggunakan foto background terbaru dari user: https://ibb.co.com/8gTtWvPk */
             background-image: linear-gradient(rgba(75, 0, 130, 0.6), rgba(0, 0, 0, 0.7)), 
                               url('https://i.ibb.co.com/8gTtWvPk/image.jpg');
             background-size: cover;
@@ -40,6 +39,35 @@
         .hotel-name { 
             font-size: 11px; font-weight: 400; letter-spacing: 1px;
             margin-top: 5px; text-transform: uppercase;
+        }
+
+        /* CUSTOMER INFO SECTION */
+        .customer-section {
+            padding: 15px;
+            background: white;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .customer-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .customer-input:focus {
+            border-color: var(--mercure-purple);
+        }
+        .input-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--mercure-purple);
+            margin-bottom: 5px;
+            display: block;
+            text-transform: uppercase;
         }
 
         /* TABS */
@@ -84,6 +112,23 @@
             position: absolute; bottom: 8px; right: 8px; cursor: pointer;
         }
 
+        /* ERROR MESSAGE BOX */
+        #errorBox {
+            display: none;
+            position: fixed;
+            top: 20%;
+            left: 10%;
+            right: 10%;
+            background: #ff4d4d;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 2000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-weight: bold;
+        }
+
         /* FOOTER */
         .dev-footer {
             text-align: center; font-size: 10px; color: #888; padding: 25px 0;
@@ -105,9 +150,17 @@
 </head>
 <body>
 
+    <div id="errorBox">Mohon isi Nama Pemesan!</div>
+
     <div class="header">
         <h1 class="logo-text">MERCURE</h1>
-        <div class="hotel-name">HOTELS BANDUNG NEXA SUPRATMAN</div>
+        <div class="hotel-name">HOTELS BANDUNG NEXA SUPRATAMAN</div>
+    </div>
+
+    <!-- KOLOM NAMA PEMESAN -->
+    <div class="customer-section">
+        <label class="input-label" for="customerName">Nama Pemesan</label>
+        <input type="text" id="customerName" class="customer-input" placeholder="Siapa nama Anda?">
     </div>
 
     <div class="tabs">
@@ -291,10 +344,27 @@
             }
         }
 
+        function showError(msg) {
+            const box = document.getElementById('errorBox');
+            box.innerText = msg;
+            box.style.display = 'block';
+            setTimeout(() => { box.style.display = 'none'; }, 3000);
+        }
+
         function kirimPesanan() {
+            const customerName = document.getElementById('customerName').value.trim();
+            
+            // Validasi Nama
+            if (!customerName) {
+                showError("Silakan masukkan Nama Pemesan terlebih dahulu!");
+                document.getElementById('customerName').focus();
+                return;
+            }
+
             let subtotal = 0;
-            let teksPesanan = "📋 *PESANAN BARU*:\n\n";
-            const allCards = document.querySelectorAll('.menu-card');
+            let teksPesanan = `👤 *PEMESAN*: ${customerName}\n`;
+            teksPesanan += "📋 *PESANAN BARU*:\n\n";
+            const allCards = document.querySelectorAll('.menu-grid .menu-card');
 
             for (let item in keranjang) {
                 const itemData = keranjang[item];
