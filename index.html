@@ -10,10 +10,12 @@
             --mercure-purple: #4b0082;
             --mercure-gold: #c5a059;
             --light-bg: #f8f5fa;
+            --success-green: #28a745;
         }
         body { 
             font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; 
             background-color: var(--light-bg); color: #333; padding-bottom: 140px;
+            overflow-x: hidden;
         }
 
         /* HEADER */
@@ -58,16 +60,10 @@
             outline: none;
             transition: border-color 0.3s;
         }
-        .customer-input:focus {
-            border-color: var(--mercure-purple);
-        }
+        .customer-input:focus { border-color: var(--mercure-purple); }
         .input-label {
-            font-size: 12px;
-            font-weight: bold;
-            color: var(--mercure-purple);
-            margin-bottom: 5px;
-            display: block;
-            text-transform: uppercase;
+            font-size: 12px; font-weight: bold; color: var(--mercure-purple);
+            margin-bottom: 5px; display: block; text-transform: uppercase;
         }
 
         /* TABS */
@@ -82,9 +78,7 @@
             font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.3s;
         }
         .tab-btn.active { 
-            background: var(--mercure-purple); 
-            color: white; 
-            border-color: var(--mercure-purple);
+            background: var(--mercure-purple); color: white; border-color: var(--mercure-purple);
         }
 
         /* MENU GRID */
@@ -112,30 +106,78 @@
             position: absolute; bottom: 8px; right: 8px; cursor: pointer;
         }
 
-        /* ERROR MESSAGE BOX */
-        #errorBox {
+        /* PAYMENT MODAL (CHECKOUT) */
+        #paymentModal {
             display: none;
             position: fixed;
-            top: 20%;
-            left: 10%;
-            right: 10%;
-            background: #ff4d4d;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            z-index: 3000;
+            overflow-y: auto;
+            padding-bottom: 50px;
+        }
+        .payment-header {
+            background: var(--mercure-purple);
             color: white;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 20px;
             text-align: center;
-            z-index: 2000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+        .summary-box { padding: 20px; }
+        .summary-item {
+            display: flex; justify-content: space-between; margin-bottom: 10px;
+            font-size: 14px; border-bottom: 1px dashed #eee; padding-bottom: 5px;
+        }
+        .qris-container {
+            text-align: center;
+            padding: 20px;
+            background: #fff;
+            margin: 15px;
+            border-radius: 15px;
+            border: 2px solid #f0f0f0;
+        }
+        .qris-img {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .total-pay {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--mercure-purple);
+            text-align: center;
+            margin: 15px 0;
         }
 
-        /* FOOTER */
-        .dev-footer {
-            text-align: center; font-size: 10px; color: #888; padding: 25px 0;
-            background: white; margin-top: 20px; border-top: 1px solid #eee;
+        /* BUTTONS */
+        .confirm-pay-btn {
+            background: var(--success-green);
+            color: white; border: none; width: 90%;
+            padding: 18px; border-radius: 12px;
+            font-size: 16px; font-weight: bold;
+            margin: 10px 5%;
+            cursor: pointer;
+        }
+        .back-btn {
+            background: #eee;
+            color: #333; border: none; width: 90%;
+            padding: 12px; border-radius: 12px;
+            font-size: 14px;
+            margin: 5px 5%;
+            cursor: pointer;
         }
 
-        /* ORDER PANEL */
+        /* ERROR BOX */
+        #errorBox {
+            display: none; position: fixed; top: 20%; left: 10%; right: 10%;
+            background: #ff4d4d; color: white; padding: 15px;
+            border-radius: 10px; text-align: center; z-index: 4000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-weight: bold;
+        }
+
         .footer-action {
             position: fixed; bottom: 0; left: 0; right: 0;
             padding: 15px; background: white; box-shadow: 0 -8px 20px rgba(0,0,0,0.1);
@@ -146,157 +188,174 @@
             width: 100%; padding: 16px; border-radius: 12px;
             font-size: 14px; font-weight: bold; display: flex; justify-content: space-between;
         }
+        .dev-footer {
+            text-align: center; font-size: 10px; color: #888; padding: 25px 0;
+            background: white; margin-top: 20px; border-top: 1px solid #eee;
+        }
     </style>
 </head>
 <body>
 
     <div id="errorBox">Mohon isi Nama Pemesan!</div>
 
-    <div class="header">
-        <h1 class="logo-text">MERCURE</h1>
-        <div class="hotel-name">HOTELS BANDUNG NEXA SUPRATAMAN</div>
-    </div>
-
-    <!-- KOLOM NAMA PEMESAN -->
-    <div class="customer-section">
-        <label class="input-label" for="customerName">Nama Pemesan</label>
-        <input type="text" id="customerName" class="customer-input" placeholder="Siapa nama Anda?">
-    </div>
-
-    <div class="tabs">
-        <button class="tab-btn active" onclick="filterMenu('Appetizer', this)">Appetizer</button>
-        <button class="tab-btn" onclick="filterMenu('Main Course', this)">Main Course</button>
-        <button class="tab-btn" onclick="filterMenu('Drink', this)">Drink</button>
-        <button class="tab-btn" onclick="filterMenu('Dessert', this)">Dessert</button>
-    </div>
-
-    <div class="menu-grid" id="menuContainer">
+    <!-- PAYMENT MODAL -->
+    <div id="paymentModal">
+        <div class="payment-header">
+            <h3>Konfirmasi & Pembayaran</h3>
+        </div>
         
-        <!-- APPETIZER -->
-        <div class="menu-card show" data-category="Appetizer">
-            <img src="https://i.ibb.co.com/RpqFxt99/image.jpg" class="menu-img" alt="Salad Segar">
-            <div class="menu-info">
-                <p class="menu-title">Salad Segar</p>
-                <p class="menu-price">50.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
-                <button class="add-btn" onclick="tambahItem('Salad Segar', 50000, this)">+</button>
-            </div>
+        <div class="summary-box">
+            <h4 style="margin-top:0">Rincian Pesanan:</h4>
+            <div id="orderListSummary"></div>
+            
+            <div class="total-pay" id="finalTotalDisplay">Total: Rp 0</div>
         </div>
 
-        <div class="menu-card show" data-category="Appetizer">
-            <img src="https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=300" class="menu-img" alt="Caesar Salad">
-            <div class="menu-info">
-                <p class="menu-title">Caesar Salad</p>
-                <p class="menu-price">45.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
-                <button class="add-btn" onclick="tambahItem('Caesar Salad', 45000, this)">+</button>
-            </div>
+        <div class="qris-container">
+            <p style="font-weight: bold; margin-bottom: 15px;">SCAN QRIS UNTUK BAYAR</p>
+            <!-- QRIS Image updated with user link -->
+            <img src="https://i.ibb.co.com/ML5ccHT/image.jpg" id="qrisImg" class="qris-img" alt="QRIS Payment">
+            <p style="font-size: 11px; color: #777;">Silakan simpan bukti transfer untuk divalidasi staf kami.</p>
         </div>
 
-        <!-- MAIN COURSE -->
-        <div class="menu-card" data-category="Main Course">
-            <img src="https://i.ibb.co.com/svdRcm5R/image.jpg" class="menu-img" alt="Nasi Goreng Kambing">
-            <div class="menu-info">
-                <p class="menu-title">Nasi Goreng Kambing</p>
-                <p class="menu-price">100.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
-                <button class="add-btn" onclick="tambahItem('Nasi Goreng Kambing', 100000, this)">+</button>
-            </div>
-        </div>
-
-        <div class="menu-card" data-category="Main Course">
-            <img src="https://i.ibb.co.com/wNhk0XSf/image.jpg" class="menu-img" alt="Mie Goreng Spesial">
-            <div class="menu-info">
-                <p class="menu-title">Mie Goreng Spesial</p>
-                <p class="menu-price">100.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
-                <button class="add-btn" onclick="tambahItem('Mie Goreng Spesial', 100000, this)">+</button>
-            </div>
-        </div>
-
-        <div class="menu-card" data-category="Main Course">
-            <img src="https://i.ibb.co.com/TMFXxKt7/image.jpg" class="menu-img" alt="Steak Sapi">
-            <div class="menu-info">
-                <p class="menu-title">Steak Sapi</p>
-                <p class="menu-price">250.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
-                <button class="add-btn" onclick="tambahItem('Steak Sapi', 250000, this)">+</button>
-            </div>
-        </div>
-
-        <div class="menu-card" data-category="Main Course">
-            <img src="https://i.ibb.co.com/DfTBFFbb/image.jpg" class="menu-img" alt="Sirloin Steak">
-            <div class="menu-info">
-                <p class="menu-title">Sirloin Steak</p>
-                <p class="menu-price">185.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
-                <button class="add-btn" onclick="tambahItem('Sirloin Steak', 185000, this)">+</button>
-            </div>
-        </div>
-
-        <!-- DRINK -->
-        <div class="menu-card" data-category="Drink">
-            <img src="https://i.ibb.co.com/Mm7Nfrp/image.jpg" class="menu-img" alt="Kopi Tubruk">
-            <div class="menu-info">
-                <p class="menu-title">Kopi Tubruk</p>
-                <p class="menu-price">35.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
-                <button class="add-btn" onclick="tambahItem('Kopi Tubruk', 35000, this)">+</button>
-            </div>
-        </div>
-
-        <div class="menu-card" data-category="Drink">
-            <img src="https://i.ibb.co.com/4Zdq72GP/image.jpg" class="menu-img" alt="Iced Coffee Latte">
-            <div class="menu-info">
-                <p class="menu-title">Iced Coffee Latte</p>
-                <p class="menu-price">40.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
-                <button class="add-btn" onclick="tambahItem('Iced Coffee Latte', 40000, this)">+</button>
-            </div>
-        </div>
-
-        <!-- DESSERT -->
-        <div class="menu-card" data-category="Dessert">
-            <img src="https://i.ibb.co.com/JWX6rRsP/image.jpg" class="menu-img" alt="Chocolate Lava Cake">
-            <div class="menu-info">
-                <p class="menu-title">Chocolate Lava Cake</p>
-                <p class="menu-price">55.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
-                <button class="add-btn" onclick="tambahItem('Chocolate Lava Cake', 55000, this)">+</button>
-            </div>
-        </div>
-
-        <div class="menu-card" data-category="Dessert">
-            <img src="https://images.unsplash.com/photo-1519996529931-28324d5a630e?w=300" class="menu-img" alt="Fruit Platter">
-            <div class="menu-info">
-                <p class="menu-title">Fruit Platter</p>
-                <p class="menu-price">40.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
-                <button class="add-btn" onclick="tambahItem('Fruit Platter', 40000, this)">+</button>
-            </div>
-        </div>
-
-        <div class="menu-card" data-category="Dessert">
-            <img src="https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=300" class="menu-img" alt="Tiramisu Cake">
-            <div class="menu-info">
-                <p class="menu-title">Tiramisu Cake</p>
-                <p class="menu-price">50.000</p>
-                <input type="text" class="note-input" placeholder="Catatan...">
-                <button class="add-btn" onclick="tambahItem('Tiramisu Cake', 50000, this)">+</button>
-            </div>
-        </div>
-
+        <button class="confirm-pay-btn" onclick="finalisasiPesanan()">SAYA SUDAH BAYAR ✓</button>
+        <button class="back-btn" onclick="tutupPayment()">KEMBALI KE MENU</button>
     </div>
 
-    <div class="dev-footer">
-        Digital Menu | Sentra Guest OS @ 2025 SGO V1.0
-    </div>
+    <div id="mainContent">
+        <div class="header">
+            <h1 class="logo-text">MERCURE</h1>
+            <div class="hotel-name">HOTELS BANDUNG NEXA SUPRATAMAN</div>
+        </div>
 
-    <div class="footer-action" id="footerOrder">
-        <button class="order-btn" onclick="kirimPesanan()">
-            <span id="totalSummary">0 Item | Rp 0</span>
-            <span>Konfirmasi Pesanan ❯</span>
-        </button>
+        <div class="customer-section">
+            <label class="input-label" for="customerName">Nama Pemesan</label>
+            <input type="text" id="customerName" class="customer-input" placeholder="Siapa nama Anda?">
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="filterMenu('Appetizer', this)">Appetizer</button>
+            <button class="tab-btn" onclick="filterMenu('Main Course', this)">Main Course</button>
+            <button class="tab-btn" onclick="filterMenu('Drink', this)">Drink</button>
+            <button class="tab-btn" onclick="filterMenu('Dessert', this)">Dessert</button>
+        </div>
+
+        <div class="menu-grid" id="menuContainer">
+            <!-- APPETIZER -->
+            <div class="menu-card show" data-category="Appetizer">
+                <img src="https://i.ibb.co.com/RpqFxt99/image.jpg" class="menu-img" alt="Salad Segar">
+                <div class="menu-info">
+                    <p class="menu-title">Salad Segar</p>
+                    <p class="menu-price">50.000</p>
+                    <input type="text" class="note-input" placeholder="Catatan...">
+                    <button class="add-btn" onclick="tambahItem('Salad Segar', 50000, this)">+</button>
+                </div>
+            </div>
+            <div class="menu-card show" data-category="Appetizer">
+                <img src="https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=300" class="menu-img" alt="Caesar Salad">
+                <div class="menu-info">
+                    <p class="menu-title">Caesar Salad</p>
+                    <p class="menu-price">45.000</p>
+                    <input type="text" class="note-input" placeholder="Catatan...">
+                    <button class="add-btn" onclick="tambahItem('Caesar Salad', 45000, this)">+</button>
+                </div>
+            </div>
+            <!-- MAIN COURSE -->
+            <div class="menu-card" data-category="Main Course">
+                <img src="https://i.ibb.co.com/svdRcm5R/image.jpg" class="menu-img" alt="Nasi Goreng Kambing">
+                <div class="menu-info">
+                    <p class="menu-title">Nasi Goreng Kambing</p>
+                    <p class="menu-price">100.000</p>
+                    <input type="text" class="note-input" placeholder="Catatan...">
+                    <button class="add-btn" onclick="tambahItem('Nasi Goreng Kambing', 100000, this)">+</button>
+                </div>
+            </div>
+            <div class="menu-card" data-category="Main Course">
+                <img src="https://i.ibb.co.com/wNhk0XSf/image.jpg" class="menu-img" alt="Mie Goreng Spesial">
+                <div class="menu-info">
+                    <p class="menu-title">Mie Goreng Spesial</p>
+                    <p class="menu-price">100.000</p>
+                    <input type="text" class="note-input" placeholder="Catatan...">
+                    <button class="add-btn" onclick="tambahItem('Mie Goreng Spesial', 100000, this)">+</button>
+                </div>
+            </div>
+            <div class="menu-card" data-category="Main Course">
+                <img src="https://i.ibb.co.com/TMFXxKt7/image.jpg" class="menu-img" alt="Steak Sapi">
+                <div class="menu-info">
+                    <p class="menu-title">Steak Sapi</p>
+                    <p class="menu-price">250.000</p>
+                    <input type="text" class="note-input" placeholder="Catatan...">
+                    <button class="add-btn" onclick="tambahItem('Steak Sapi', 250000, this)">+</button>
+                </div>
+            </div>
+            <div class="menu-card" data-category="Main Course">
+                <img src="https://i.ibb.co.com/DfTBFFbb/image.jpg" class="menu-img" alt="Sirloin Steak">
+                <div class="menu-info">
+                    <p class="menu-title">Sirloin Steak</p>
+                    <p class="menu-price">185.000</p>
+                    <input type="text" class="note-input" placeholder="Catatan...">
+                    <button class="add-btn" onclick="tambahItem('Sirloin Steak', 185000, this)">+</button>
+                </div>
+            </div>
+            <!-- DRINK -->
+            <div class="menu-card" data-category="Drink">
+                <img src="https://i.ibb.co.com/Mm7Nfrp/image.jpg" class="menu-img" alt="Kopi Tubruk">
+                <div class="menu-info">
+                    <p class="menu-title">Kopi Tubruk</p>
+                    <p class="menu-price">35.000</p>
+                    <input type="text" class="note-input" placeholder="Catatan...">
+                    <button class="add-btn" onclick="tambahItem('Kopi Tubruk', 35000, this)">+</button>
+                </div>
+            </div>
+            <div class="menu-card" data-category="Drink">
+                <img src="https://i.ibb.co.com/4Zdq72GP/image.jpg" class="menu-img" alt="Iced Coffee Latte">
+                <div class="menu-info">
+                    <p class="menu-title">Iced Coffee Latte</p>
+                    <p class="menu-price">40.000</p>
+                    <input type="text" class="note-input" placeholder="Catatan...">
+                    <button class="add-btn" onclick="tambahItem('Iced Coffee Latte', 40000, this)">+</button>
+                </div>
+            </div>
+            <!-- DESSERT -->
+            <div class="menu-card" data-category="Dessert">
+                <img src="https://i.ibb.co.com/JWX6rRsP/image.jpg" class="menu-img" alt="Chocolate Lava Cake">
+                <div class="menu-info">
+                    <p class="menu-title">Chocolate Lava Cake</p>
+                    <p class="menu-price">55.000</p>
+                    <input type="text" class="note-input" placeholder="Catatan...">
+                    <button class="add-btn" onclick="tambahItem('Chocolate Lava Cake', 55000, this)">+</button>
+                </div>
+            </div>
+            <div class="menu-card" data-category="Dessert">
+                <img src="https://images.unsplash.com/photo-1519996529931-28324d5a630e?w=300" class="menu-img" alt="Fruit Platter">
+                <div class="menu-info">
+                    <p class="menu-title">Fruit Platter</p>
+                    <p class="menu-price">40.000</p>
+                    <input type="text" class="note-input" placeholder="Catatan...">
+                    <button class="add-btn" onclick="tambahItem('Fruit Platter', 40000, this)">+</button>
+                </div>
+            </div>
+            <div class="menu-card" data-category="Dessert">
+                <img src="https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=300" class="menu-img" alt="Tiramisu Cake">
+                <div class="menu-info">
+                    <p class="menu-title">Tiramisu Cake</p>
+                    <p class="menu-price">50.000</p>
+                    <input type="text" class="note-input" placeholder="Catatan...">
+                    <button class="add-btn" onclick="tambahItem('Tiramisu Cake', 50000, this)">+</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="dev-footer">
+            Digital Menu | Sentra Guest OS @ 2025 SGO V1.0
+        </div>
+
+        <div class="footer-action" id="footerOrder">
+            <button class="order-btn" onclick="bukaPayment()">
+                <span id="totalSummary">0 Item | Rp 0</span>
+                <span>Checkout ❯</span>
+            </button>
+        </div>
     </div>
 
     <script>
@@ -316,14 +375,11 @@
             if (keranjang[nama]) {
                 keranjang[nama].qty += 1;
             } else {
-                keranjang[nama] = { 
-                    harga: harga, 
-                    qty: 1
-                };
+                keranjang[nama] = { harga: harga, qty: 1 };
             }
             updateUI();
             btnElement.innerText = "✓";
-            btnElement.style.background = "#28a745";
+            btnElement.style.background = "var(--success-green)";
             setTimeout(() => { 
                 btnElement.innerText = "+"; 
                 btnElement.style.background = "var(--mercure-purple)";
@@ -344,6 +400,59 @@
             }
         }
 
+        function bukaPayment() {
+            const customerName = document.getElementById('customerName').value.trim();
+            if (!customerName) {
+                showError("Silakan masukkan Nama Pemesan terlebih dahulu!");
+                document.getElementById('customerName').focus();
+                return;
+            }
+
+            const modal = document.getElementById('paymentModal');
+            const listArea = document.getElementById('orderListSummary');
+            let subtotal = 0;
+            let html = "";
+
+            const allCards = document.querySelectorAll('.menu-grid .menu-card');
+
+            for (let item in keranjang) {
+                const itemData = keranjang[item];
+                const itemTotal = itemData.harga * itemData.qty;
+                subtotal += itemTotal;
+
+                let catatan = "Tanpa catatan";
+                allCards.forEach(card => {
+                    if (card.querySelector('.menu-title').innerText === item) {
+                        catatan = card.querySelector('.note-input').value.trim() || "Tanpa catatan";
+                    }
+                });
+                keranjang[item].currentNote = catatan;
+
+                html += `
+                <div class="summary-item">
+                    <div><b>${item}</b> x${itemData.qty}<br><small>Note: ${catatan}</small></div>
+                    <div>Rp ${itemTotal.toLocaleString('id-ID')}</div>
+                </div>`;
+            }
+
+            const tax = subtotal * 0.21;
+            const grandTotal = subtotal + tax;
+
+            html += `<div class="summary-item"><div>Subtotal</div><div>Rp ${subtotal.toLocaleString('id-ID')}</div></div>`;
+            html += `<div class="summary-item"><div>Tax & Svc (21%)</div><div>Rp ${tax.toLocaleString('id-ID')}</div></div>`;
+            
+            listArea.innerHTML = html;
+            document.getElementById('finalTotalDisplay').innerText = `TOTAL: Rp ${grandTotal.toLocaleString('id-ID')}`;
+            
+            modal.style.display = 'block';
+            document.getElementById('mainContent').style.display = 'none';
+        }
+
+        function tutupPayment() {
+            document.getElementById('paymentModal').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+        }
+
         function showError(msg) {
             const box = document.getElementById('errorBox');
             box.innerText = msg;
@@ -351,49 +460,27 @@
             setTimeout(() => { box.style.display = 'none'; }, 3000);
         }
 
-        function kirimPesanan() {
+        function finalisasiPesanan() {
             const customerName = document.getElementById('customerName').value.trim();
-            
-            // Validasi Nama
-            if (!customerName) {
-                showError("Silakan masukkan Nama Pemesan terlebih dahulu!");
-                document.getElementById('customerName').focus();
-                return;
-            }
-
             let subtotal = 0;
             let teksPesanan = `👤 *PEMESAN*: ${customerName}\n`;
-            teksPesanan += "📋 *PESANAN BARU*:\n\n";
-            const allCards = document.querySelectorAll('.menu-grid .menu-card');
+            teksPesanan += "📋 *PESANAN BARU (SUDAH BAYAR)*:\n\n";
 
             for (let item in keranjang) {
                 const itemData = keranjang[item];
-                const itemTotal = itemData.harga * itemData.qty;
-                subtotal += itemTotal;
-                
-                let catatanTerbaru = "Tanpa catatan";
-                allCards.forEach(card => {
-                    const title = card.querySelector('.menu-title').innerText;
-                    if (title === item) {
-                        const inputVal = card.querySelector('.note-input').value.trim();
-                        if (inputVal !== "") {
-                            catatanTerbaru = inputVal;
-                        }
-                    }
-                });
-                
+                subtotal += (itemData.harga * itemData.qty);
                 teksPesanan += `🔹 *${item}* (x${itemData.qty})\n`;
-                teksPesanan += `   Catatan: ${catatanTerbaru}\n\n`;
+                teksPesanan += `   Catatan: ${itemData.currentNote}\n\n`;
             }
-            
+
             const tax = subtotal * 0.21;
             const grandTotal = subtotal + tax;
-            
+
             teksPesanan += `--------------------------\n`;
             teksPesanan += `Subtotal: Rp ${subtotal.toLocaleString('id-ID')}\n`;
             teksPesanan += `Tax & Svc (21%): Rp ${tax.toLocaleString('id-ID')}\n`;
             teksPesanan += `*TOTAL AKHIR: Rp ${grandTotal.toLocaleString('id-ID')}*`;
-            
+
             tg.sendData(teksPesanan);
             tg.close();
         }
