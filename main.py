@@ -406,16 +406,16 @@ async def send_daily_report():
         # Format pesan
         lines = [
             f"<b>RINGKASAN HARIAN</b>",
-            f"🏪 {rest_name}",
-            f"📅 {date_str}",
-            f"â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”",
+            f"{rest_name}",
+            f"{date_str}",
+            f"--------------------",
             f"",
             f"<b>Pesanan Hari Ini</b>",
             f"Total Pesanan    : <b>{total_orders}</b> {count_arrow} ({'+' if count_diff >= 0 else ''}{count_diff} vs kemarin)",
-            f"Selesai        : {completed}",
-            f"âŒ Dibatalkan     : {cancelled}",
-            f"🍽️ Dine-in        : {dine_in_orders}",
-            f"🚵 Delivery       : {delivery_orders}",
+            f"Selesai          : {completed}",
+            f"Dibatalkan       : {cancelled}",
+            f"Dine-in          : {dine_in_orders}",
+            f"Delivery         : {delivery_orders}",
             f"",
             f"<b>Pendapatan</b>",
             f"Total Revenue    : <b>Rp {int(total_revenue):,}</b>".replace(',', '.'),
@@ -427,13 +427,13 @@ async def send_daily_report():
                 f"",
                 f"<b>Menu Terlaris</b>",
             ])
-            medals = ["🥇", "🥈", "🥉"]
+            medals = ["1.", "2.", "3."]
             for i, (name, qty) in enumerate(top_items):
                 lines.append(f"{medals[i]} {name} ({qty} porsi)")
 
         lines.extend([
             f"",
-            f"â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”",
+            f"--------------------",
         ])
 
         if total_orders == 0:
