@@ -134,7 +134,7 @@
                         <p class="menu-desc" style="font-size: 11px; color: #666; margin: 2px 0 5px 0; line-height: 1.2;">{{ item.description }}</p>
                         {% endif %}
                         {% if item.avg_rating and item.avg_rating > 0 %}
-                        <div style="font-size:11px;color:#F0A500;margin-bottom:4px;">
+                        <div style="font-size:11px;color:#7a1a90;margin-bottom:4px;">
                             {% for i in range(item.avg_rating|int) %}⭐{% endfor %}
                             <span style="color:#888;font-size:10px;"> {{ "%.1f"|format(item.avg_rating) }} ({{ item.review_count }} ulasan)</span>
                         </div>

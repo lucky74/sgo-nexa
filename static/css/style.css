@@ -1,10 +1,12 @@
 :root {
-    --primary-color: #D4AF37; /* Gold */
+    --primary-color: #561269; /* SGO Purple - warna logo */
+    --primary-light: #7a1a90; /* Ungu lebih terang untuk hover */
+    --primary-dark: #3d0d4a;  /* Ungu lebih gelap */
     --bg-color: #121212;
     --surface-color: #1E1E1E;
     --text-color: #E0E0E0;
     --text-secondary: #A0A0A0;
-    --accent-color: #FFD700;
+    --accent-color: #8b1fa8;
     --danger-color: #CF6679;
     --success-color: #03DAC6;
 }
@@ -102,7 +104,7 @@ body {
 
 .tab-btn.active {
     background-color: var(--primary-color);
-    color: black;
+    color: white;
     border-color: var(--primary-color);
     font-weight: 600;
 }
@@ -185,7 +187,7 @@ body {
 
 .add-btn, .minus-btn {
     background-color: var(--primary-color);
-    color: black;
+    color: white;
     border: none;
     width: 30px;
     height: 30px;
@@ -221,7 +223,7 @@ body {
 .order-btn {
     width: 100%;
     background-color: var(--primary-color);
-    color: black;
+    color: white;
     border: none;
     padding: 15px;
     border-radius: 12px;
@@ -231,7 +233,7 @@ body {
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 4px 15px rgba(86, 18, 105, 0.4);
 }
 
 .dev-footer {
