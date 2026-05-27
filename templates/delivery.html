@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pesan Antar &mdash; {{ restaurant_name }}</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .delivery-form {
+            background: var(--surface-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 0 16px 16px;
+        }
+        .delivery-form .section-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .delivery-input {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #2C2C2C;
+            color: #eee;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .delivery-input:focus { border-color: var(--primary-color); outline: none; }
+        .delivery-input::placeholder { color: #666; }
+
+        .location-btn {
+            width: 100%;
+            padding: 11px;
+            background: #1a3a2a;
+            border: 1px solid #2d6a4f;
+            border-radius: 8px;
+            color: #52b788;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            transition: background 0.2s;
+        }
+        .location-btn:hover { background: #1f4a35; }
+        .location-btn.loading { opacity: 0.7; cursor: not-allowed; }
+
+        .location-result {
+            background: #1a2a1a;
+            border: 1px solid #2d6a4f;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: none;
+        }
+        .location-result .loc-address { font-size: 0.82rem; color: #eee; margin-bottom: 6px; }
+        .location-result .loc-distance { font-size: 0.78rem; color: #52b788; }
+        .location-result .loc-fee { font-size: 0.9rem; font-weight: 600; color: var(--primary-color); margin-top: 4px; }
+        .location-result .loc-maps { font-size: 0.75rem; color: #52b788; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; }
+
+        .ongkir-info {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 10px;
+            font-size: 0.78rem;
+            color: #aaa;
+            line-height: 1.6;
+        }
+        .ongkir-info b { color: var(--primary-color); }
+
+        .error-location {
+            background: #2a1a1a;
+            border: 1px solid #6a2d2d;
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #ff6b6b;
+            font-size: 0.82rem;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        @keyframes shimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .autocomplete-dropdown {
+            position: absolute;
+            background: #2C2C2C;
+            border: 1px solid #555;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            width: 100%;
+            left: 0;
+        }
+        .autocomplete-item {
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            color: #eee;
+            cursor: pointer;
+            border-bottom: 1px solid #444;
+            line-height: 1.3;
+        }
+        .autocomplete-item:last-child { border-bottom: none; }
+        .autocomplete-item:hover { background: #3a3a3a; }
+        .autocomplete-item .addr-main { font-weight: 600; color: #fff; }
+        .autocomplete-item .addr-sub { font-size: 0.75rem; color: #aaa; margin-top: 2px; }
+        .address-wrapper { position: relative; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="errorBox">Mohon lengkapi data pengiriman!</div>
+
+    <!-- PAYMENT MODAL -->
+    <div id="paymentModal">
+        <div class="payment-header">
+            <h3>🛵 Konfirmasi Pesanan Antar</h3>
+        </div>
+        <div class="summary-box">
+            <h4 style="margin-top:0">Rincian Pesanan:</h4>
+            <div id="orderListSummary"></div>
+            <div style="margin-top:15px;border-top:1px dashed #ccc;padding-top:10px;">
+                <label style="font-size:12px;font-weight:bold;display:block;margin-bottom:5px;">Catatan Tambahan (Opsional):</label>
+                <textarea id="generalNote" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:5px;font-family:inherit;" rows="2" placeholder="Contoh: Jangan pedas, sambal dipisah..."></textarea>
+            </div>
+
+            <!-- Voucher Section -->
+            <div id="voucherSection" style="margin-top:12px;border-top:1px dashed #ccc;padding-top:12px;">
+                <label style="font-size:12px;font-weight:bold;display:block;margin-bottom:6px;">🎟️ Kode Voucher (Opsional):</label>
+                <div style="display:flex;gap:8px;">
+                    <input type="text" id="voucherInput" placeholder="Masukkan kode voucher..."
+                           style="flex:1;padding:8px 10px;border:1px solid #ddd;border-radius:5px;font-family:inherit;font-size:13px;text-transform:uppercase;"
+                           onkeydown="if(event.key==='Enter'){applyVoucher();}">
+                    <button onclick="applyVoucher()" style="padding:8px 14px;background:#4A1D6E;color:#fff;border:none;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">Terapkan</button>
+                </div>
+                <div id="voucherMsg" style="font-size:12px;margin-top:5px;"></div>
+            </div>
+
+            <div class="total-pay" id="finalTotalDisplay">Total: Rp 0</div>
+        </div>
+        <div class="qris-container">
+            <p style="font-weight:bold;margin-bottom:15px;">SCAN QRIS UNTUK BAYAR</p>
+            <img src="{{ qris_image }}" class="qris-img" alt="QRIS Payment">
+            <p style="font-size:11px;color:#777;">Silakan simpan bukti transfer untuk divalidasi staf kami.</p>
+        </div>
+        <button class="confirm-pay-btn" onclick="finalisasiPesanan()">SAYA SUDAH BAYAR ✓</button>
+        <button class="back-btn" onclick="tutupPayment()">KEMBALI KE MENU</button>
+    </div>
+
+    <div id="mainContent">
+        <div class="header">
+            <h1 class="logo-text">{{ restaurant_name }}</h1>
+        </div>
+
+        <!-- Form Delivery -->
+        <div class="delivery-form">
+            <div class="section-title"><i class="fas fa-user"></i> Data Pemesan</div>
+            <input type="text" id="nama" class="delivery-input" placeholder="Nama Pemesan *">
+            <input type="tel" id="whatsapp" class="delivery-input" placeholder="Nomor WhatsApp * (contoh: 08123456789)">
+
+            <div class="section-title" style="margin-top:8px;"><i class="fas fa-map-marker-alt"></i> Alamat Pengiriman</div>
+            <div class="address-wrapper">
+                <input type="text" id="delivery_address" class="delivery-input"
+                       placeholder="Ketik alamat pengiriman... (contoh: Gg. IX Empang)"
+                       autocomplete="off"
+                       oninput="onAddressInput(this.value)"
+                       style="margin-bottom:0;">
+                <div class="autocomplete-dropdown" id="addressDropdown" style="display:none;"></div>
+            </div>
+            <div id="addressConfirmed" style="display:none;background:#1a2a1a;border:1px solid #2d6a4f;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:0.8rem;color:#52b788;">
+                <i class="fas fa-check-circle me-1"></i> <span id="addressConfirmedText"></span>
+            </div>
+
+            <button class="location-btn" id="locationBtn" onclick="getLocation()">
+                <i class="fas fa-crosshairs"></i> Gunakan Lokasi GPS Saya
+            </button>
+
+            <div class="error-location" id="locationError"></div>
+            <div class="location-result" id="locationResult">
+                <div class="loc-address" id="locAddress"></div>
+                <div class="loc-distance" id="locDistance"></div>
+                <div class="loc-fee" id="locFee"></div>
+                <a class="loc-maps" id="locMaps" href="#" target="_blank"><i class="fas fa-map"></i> Lihat Rute di Google Maps</a>
+            </div>
+
+            <div class="ongkir-info">
+                <b>Info Ongkos Kirim:</b><br>
+                Minimum Rp {{ settings.delivery_min_fee|int|format_idr }} untuk {{ settings.delivery_min_km }} km pertama<br>
+                Rp {{ settings.delivery_fee_per_km|int|format_idr }}/km berikutnya &nbsp;|&nbsp; Maks {{ settings.delivery_max_km }} km
+            </div>
+
+            <div class="section-title" style="margin-top:8px;"><i class="fas fa-sticky-note"></i> Catatan Pesanan</div>
+            <textarea id="deliveryNote" class="delivery-input" rows="2" placeholder="Catatan untuk dapur (opsional, contoh: tidak pedas, tanpa bawang...)" style="resize:none;"></textarea>
+        </div>
+
+        <!-- Search Bar -->
+        <div style="padding:0 16px 10px;">
+            <input type="text" id="menuSearch" class="customer-input" placeholder="🔍 Cari menu..." oninput="searchMenu(this.value)" style="font-size:0.9rem;">
+        </div>
+
+        <div class="tabs">
+            {% for category in menu.keys() %}
+            <button class="tab-btn {% if loop.first %}active{% endif %}" onclick="filterMenu('{{ category }}', this)">{{ category }}</button>
+            {% endfor %}
+        </div>
+
+        <div class="menu-grid" id="menuContainer">
+            {% for category, items in menu.items() %}
+                {% set outer_loop = loop %}
+                {% for item in items %}
+                <div class="menu-card {% if outer_loop.first %}show{% endif %}" data-category="{{ category }}">
+                    <div class="img-skeleton" style="width:100%;height:150px;background:linear-gradient(90deg,#2a2a2a 25%,#333 50%,#2a2a2a 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;"></div>
+                    <img src="{{ item.image }}" class="menu-img" alt="{{ item.name }}" onclick="zoomImage(this.src)"
+                         onload="this.previousElementSibling.style.display='none';this.style.display='block';"
+                         onerror="this.previousElementSibling.style.display='none';this.style.display='block';"
+                         style="display:none;">
+                    <div class="menu-info">
+                        <p class="menu-title">{{ item.name }}</p>
+                        {% if item.cuisine %}
+                        <span style="font-size:10px;background:#f0f0f0;padding:2px 6px;border-radius:4px;color:#555;margin-bottom:4px;display:inline-block;">{{ item.cuisine }}</span>
+                        {% endif %}
+                        {% if item.description %}
+                        <p class="menu-desc" style="font-size:11px;color:#666;margin:2px 0 5px 0;line-height:1.2;">{{ item.description }}</p>
+                        {% endif %}
+                        <p class="menu-price">{{ "{:,.0f}".format(item.price).replace(',', '.') }}</p>
+                        <input type="text" class="note-input" placeholder="Catatan...">
+                        <div class="btn-container" data-nama="{{ item.name }}" data-harga="{{ item.price }}">
+                            <button class="add-btn" onclick="tambahItem('{{ item.name }}', {{ item.price }}, this)">+</button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endfor %}
+            <div id="emptySearchState" style="display:none;grid-column:1/-1;text-align:center;padding:40px 20px;color:#888;">
+                <div style="font-size:2.5rem;margin-bottom:12px;">🔍</div>
+                <p>Tidak ada menu yang cocok.</p>
+            </div>
+        </div>
+
+        {% if not menu %}
+        <div style="text-align:center;padding:60px 20px;color:#888;">
+            <div style="font-size:3rem;margin-bottom:16px;">🍽️</div>
+            <p>Menu belum tersedia.</p>
+        </div>
+        {% endif %}
+
+        <div class="dev-footer">Lucky Digital Menu | Sentra Guest OS @ {{ current_year }} SGO V2.1</div>
+
+        <div class="footer-action" id="footerOrder">
+            <button class="order-btn" onclick="bukaPayment()">
+                <span id="totalSummary">0 Item | Rp 0</span>
+                <span><i class="fas fa-shopping-bag"></i> Checkout ❯</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- IMAGE ZOOM MODAL -->
+    <div id="imageModal" class="image-modal" onclick="closeZoom()">
+        <span class="close-image-modal">&times;</span>
+        <img class="image-modal-content" id="zoomedImage">
+    </div>
+
+    <!-- Embed settings & tgid dari server -->
+    <script>
+        window.TGID = "{{ tgid }}";
+        window.OUTLET_ID = {{ outlet_id if outlet_id else 'null' }};
+        window.DELIVERY_SETTINGS = {
+            restaurant_lat: {{ settings.restaurant_lat }},
+            restaurant_lng: {{ settings.restaurant_lng }},
+            min_fee: {{ settings.delivery_min_fee }},
+            fee_per_km: {{ settings.delivery_fee_per_km }},
+            min_km: {{ settings.delivery_min_km }},
+            max_km: {{ settings.delivery_max_km }},
+        };
+        window.TAX_SETTINGS_SERVER = {
+            enable_service: {{ 'true' if tax_settings.enable_service else 'false' }},
+            service_rate:   {{ tax_settings.service_rate }},
+            enable_tax:     {{ 'true' if tax_settings.enable_tax else 'false' }},
+            tax_rate:       {{ tax_settings.tax_rate }},
+            tax_label:      "{{ tax_settings.tax_label }}"
+        };
+    </script>
+    <script src="/static/js/script.js"></script>
+    <script src="/static/js/delivery.js"></script>
+</body>
+</html>

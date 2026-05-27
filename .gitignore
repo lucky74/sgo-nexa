@@ -1,0 +1,48 @@
+# Environment
+.env
+.env.local
+
+# Sensitive keys
+Key_Restauran.txt
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+outlets/
+backups/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+venv2/
+venv_wsl/
+*.egg-info/
+
+# Logs
+*.log
+server_debug.log
+install_log.txt
+check_output.txt
+
+# Temp/debug files
+fix_*.py
+check_*.py
+debug_*.py
+test_*.py
+update_*.py
+migrate_*.py
+setup_*.py
+
+# Vercel
+.vercel/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploaded images (akan diupload ulang setelah deploy)
+static/images/menu/
+static/images/qris_custom.*

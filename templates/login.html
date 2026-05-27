@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login &mdash; {{ restaurant_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0F0A1A;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Background pattern */
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(74,29,110,0.3) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(240,165,0,0.1) 0%, transparent 50%);
+        }
+        .login-card {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+        }
+        .login-logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .login-logo .icon-wrap {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, #4A1D6E, #6B2FA0);
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 24px rgba(74,29,110,0.4);
+        }
+        .login-logo h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .login-logo p {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.4);
+        }
+        .form-group { margin-bottom: 18px; }
+        .form-label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .input-wrap {
+            position: relative;
+        }
+        .input-wrap i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.3);
+            font-size: 0.85rem;
+        }
+        .form-input {
+            width: 100%;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 12px 14px 12px 40px;
+            font-size: 0.88rem;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s, background 0.2s;
+            outline: none;
+        }
+        .form-input::placeholder { color: rgba(255,255,255,0.25); }
+        .form-input:focus {
+            border-color: #6B2FA0;
+            background: rgba(255,255,255,0.09);
+        }
+        .btn-login {
+            width: 100%;
+            background: linear-gradient(135deg, #4A1D6E, #6B2FA0);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 13px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-login:hover { opacity: 0.9; }
+        .btn-login:active { transform: scale(0.98); }
+        .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
+        .error-box {
+            background: rgba(239,68,68,0.12);
+            border: 1px solid rgba(239,68,68,0.3);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            color: #FCA5A5;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer-text {
+            text-align: center;
+            margin-top: 28px;
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.2);
+        }
+        .role-badge {
+            display: inline-block;
+            background: rgba(240,165,0,0.15);
+            color: #F0A500;
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .shake { animation: shake 0.4s ease; }
+    </style>
+</head>
+<body>
+<div class="login-card">
+    <div class="login-logo">
+        <div class="icon-wrap">🍽️</div>
+        <h1>{{ restaurant_name }}</h1>
+        {% if outlet_id %}
+        <p style="color:#F0A500;font-size:0.8rem;font-weight:600;">Login Admin &mdash; Outlet #{{ outlet_id }}</p>
+        {% else %}
+        <p>Restaurant Management System</p>
+        {% endif %}
+    </div>
+
+    {% if error %}
+    <div class="error-box">
+        <i class="fas fa-exclamation-circle"></i>
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" action="{{ form_action if form_action else '/login' }}" id="loginForm">
+        <input type="hidden" name="next" value="{{ next }}">
+        <div class="form-group">
+            <label class="form-label">Username</label>
+            <div class="input-wrap">
+                <i class="fas fa-user"></i>
+                <input type="text" name="username" class="form-input"
+                       placeholder="Masukkan username..." autocomplete="username"
+                       value="{{ username or '' }}" required autofocus>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-wrap">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password" class="form-input"
+                       placeholder="Masukkan password..." autocomplete="current-password" required>
+            </div>
+        </div>
+        <button type="submit" class="btn-login" id="loginBtn">
+            <i class="fas fa-sign-in-alt"></i> Masuk
+        </button>
+    </form>
+
+    <div class="footer-text">
+        SGO v2.1 &copy; {{ current_year }} &nbsp;|&nbsp; {{ restaurant_name }}
+    </div>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const btn = document.getElementById('loginBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memverifikasi...';
+    });
+</script>
+</body>
+</html>

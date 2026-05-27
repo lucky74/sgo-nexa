@@ -1,0 +1,606 @@
+<h1 id="buku-panduan-sgo">Buku Panduan SGO</h1>
+<h2 id="smart-guest-order-sistem-pos-restoran-via-telegram-bot">Smart
+Guest Order — Sistem POS Restoran via Telegram Bot</h2>
+<hr />
+<p><strong>Dikembangkan oleh:</strong> <strong>Sentra Guest OS</strong>
+Lucky Zamaludin Malik 📱 WhatsApp: 089639541438 📧 Email:
+sentraguest.os@gmail.com © 2026 Sentra Guest OS. All rights
+reserved.</p>
+<p><strong>Versi:</strong> 2.1 <strong>Tanggal:</strong> 2026</p>
+<hr />
+<h2 id="daftar-isi">Daftar Isi</h2>
+<ol type="1">
+<li>Pengenalan Sistem</li>
+<li>Cara Memulai Server</li>
+<li>Login Admin &amp; Owner</li>
+<li>Manajemen Menu</li>
+<li>Manajemen Pesanan</li>
+<li>Sistem Delivery &amp; Kurir</li>
+<li>Voucher &amp; Promo</li>
+<li>Stok &amp; Inventory</li>
+<li>Rating &amp; Review</li>
+<li>Riwayat Pelanggan</li>
+<li>Laporan Penjualan</li>
+<li>Laporan Harian Otomatis</li>
+<li>Backup &amp; Reset Database</li>
+<li>Pengaturan Sistem</li>
+<li>Panduan untuk Pembeli</li>
+<li>Troubleshooting</li>
+</ol>
+<hr />
+<h2 id="bab-1-pengenalan-sistem">BAB 1 — Pengenalan Sistem</h2>
+<p>SGO adalah sistem POS (Point of Sale) untuk restoran yang menggunakan
+Telegram Bot sebagai media pemesanan. Sistem terdiri dari dua bagian
+utama:</p>
+<p><strong>1. Bot Telegram (untuk Pembeli)</strong> Pembeli membuka bot
+Telegram restoran, memilih menu, dan melakukan pemesanan langsung dari
+smartphone.</p>
+<p><strong>2. Dashboard Web (untuk Admin &amp; Owner)</strong> Admin
+mengelola menu, pesanan, kurir, dan pengaturan melalui browser web.
+Owner memantau laporan penjualan.</p>
+<h3 id="alur-pemesanan-dine-in">Alur Pemesanan Dine-in</h3>
+<pre><code>Pembeli buka bot → Pilih &quot;Makan di Tempat&quot; → Isi nama &amp; nomor meja
+→ Pilih menu → Checkout → Bayar QRIS → Pesanan masuk ke admin
+→ Admin proses → Status update → Pembeli dapat notifikasi
+→ Pesanan disajikan → Pembeli beri rating</code></pre>
+<h3 id="alur-pemesanan-delivery">Alur Pemesanan Delivery</h3>
+<pre><code>Pembeli buka bot → Pilih &quot;Pesan Antar&quot; → Isi nama, WhatsApp, alamat
+→ GPS otomatis hitung ongkir → Pilih menu → Checkout → Bayar QRIS
+→ Pesanan masuk ke admin → Admin assign kurir → Kurir dapat link konfirmasi
+→ Kurir antar → Konfirmasi selesai → Pembeli dapat notifikasi selesai</code></pre>
+<hr />
+<h2 id="bab-2-cara-memulai-server">BAB 2 — Cara Memulai Server</h2>
+<h3 id="langkah-1-buka-terminal-wsl">Langkah 1: Buka Terminal WSL</h3>
+<p>Di Windows, buka <strong>PowerShell</strong> atau <strong>Command
+Prompt</strong>, lalu ketik:</p>
+<pre><code>wsl</code></pre>
+<h3 id="langkah-2-jalankan-script-start">Langkah 2: Jalankan Script
+Start</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> /mnt/c/Users/user/Desktop/SGO_Nexa/start.sh</span></code></pre></div>
+<h3 id="langkah-3-catat-url-tunnel">Langkah 3: Catat URL Tunnel</h3>
+<p>Setelah script berjalan, akan muncul:</p>
+<pre><code>✅ URL Tunnel Aktif:
+   https://xxxx-xxxx.trycloudflare.com
+
+📌 Halaman Admin:
+   Dashboard  : https://xxxx-xxxx.trycloudflare.com/dashboard
+   Pesanan    : https://xxxx-xxxx.trycloudflare.com/orders
+   ...</code></pre>
+<p>Catat URL ini — digunakan untuk mengakses dashboard admin.</p>
+<h3 id="langkah-4-update-webhook-bot-jika-perlu">Langkah 4: Update
+Webhook Bot (jika perlu)</h3>
+<p>Jika bot tidak merespons setelah restart, buka browser dan akses:</p>
+<pre><code>https://xxxx-xxxx.trycloudflare.com/set_webhook</code></pre>
+<h3 id="catatan-penting">Catatan Penting</h3>
+<blockquote>
+<p>⚠️ URL tunnel <strong>berubah setiap kali</strong> server di-restart.
+Selalu gunakan URL terbaru dari output script start.</p>
+</blockquote>
+<hr />
+<h2 id="bab-3-login-admin-owner">BAB 3 — Login Admin &amp; Owner</h2>
+<h3 id="akses-halaman-login">Akses Halaman Login</h3>
+<p>Buka browser, ketik URL dashboard:</p>
+<pre><code>https://xxxx-xxxx.trycloudflare.com/dashboard</code></pre>
+<p>Akan otomatis redirect ke halaman login.</p>
+<h3 id="kredensial-default">Kredensial Default</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Username</th>
+<th>Password</th>
+<th>Akses</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>admin</code></td>
+<td><code>admin123</code></td>
+<td>Semua halaman</td>
+</tr>
+<tr class="even">
+<td><code>owner</code></td>
+<td><code>owner123</code></td>
+<td>Laporan penjualan saja</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>Segera ganti password</strong> setelah pertama kali
+login!</p>
+</blockquote>
+<h3 id="cara-ganti-password">Cara Ganti Password</h3>
+<ol type="1">
+<li>Login sebagai <strong>admin</strong></li>
+<li>Buka menu <strong>Pengaturan</strong></li>
+<li>Scroll ke bawah → section <strong>“Ganti Password
+Login”</strong></li>
+<li>Pilih user (admin/owner), isi password baru, konfirmasi</li>
+<li>Klik <strong>Ganti Password</strong></li>
+</ol>
+<h3 id="perbedaan-akses-admin-vs-owner">Perbedaan Akses Admin vs
+Owner</h3>
+<p><strong>Admin dapat mengakses:</strong> - Manajemen Menu - Laporan
+Penjualan - Manajemen Pesanan - Manajemen Kurir - Voucher &amp; Promo -
+Riwayat Pelanggan - Pengaturan (termasuk reset database)</p>
+<p><strong>Owner hanya dapat mengakses:</strong> - Laporan Penjualan
+(read-only)</p>
+<hr />
+<h2 id="bab-4-manajemen-menu">BAB 4 — Manajemen Menu</h2>
+<h3 id="membuka-dashboard-menu">Membuka Dashboard Menu</h3>
+<p>Klik <strong>“Manajemen Menu”</strong> di sidebar kiri.</p>
+<h3 id="menambah-menu-baru">Menambah Menu Baru</h3>
+<ol type="1">
+<li>Klik tombol <strong>“+ Tambah Menu”</strong> (kanan atas)</li>
+<li>Isi form:
+<ul>
+<li><strong>Nama Menu</strong> — wajib diisi</li>
+<li><strong>Kategori</strong> — pilih dari dropdown (Appetizer, Main
+Course, dll)</li>
+<li><strong>Cuisine</strong> — asal masakan (Indonesian, Western,
+dll)</li>
+<li><strong>Harga</strong> — dalam Rupiah, tanpa titik/koma</li>
+<li><strong>Deskripsi</strong> — opsional, tampil di bawah nama
+menu</li>
+<li><strong>Foto Produk</strong> — wajib, format JPG/PNG</li>
+</ul></li>
+<li>Klik <strong>“Simpan Menu”</strong></li>
+</ol>
+<h3 id="mengedit-menu">Mengedit Menu</h3>
+<ol type="1">
+<li>Klik ikon pensil (🖊️) di kolom Aksi</li>
+<li>Ubah data yang diperlukan</li>
+<li>Klik <strong>“Simpan Perubahan”</strong></li>
+</ol>
+<h3 id="menonaktifkan-menu">Menonaktifkan Menu</h3>
+<p>Klik ikon mata (👁️) di kolom Aksi. Menu nonaktif tidak akan muncul di
+bot pembeli.</p>
+<h3 id="menghapus-menu">Menghapus Menu</h3>
+<p>Klik ikon tempat sampah (🗑️) → konfirmasi hapus.</p>
+<h3 id="mengatur-stok-menu">Mengatur Stok Menu</h3>
+<ol type="1">
+<li>Klik ikon kotak (📦) di kolom Aksi</li>
+<li>Isi <strong>Jumlah Stok</strong> (isi <code>-1</code> untuk stok
+tidak terbatas)</li>
+<li>Isi <strong>Batas Peringatan</strong> — sistem kirim notifikasi jika
+stok di bawah angka ini</li>
+<li>Klik <strong>Simpan</strong></li>
+</ol>
+<blockquote>
+<p>Jika stok mencapai 0, menu otomatis dinonaktifkan dan admin mendapat
+notifikasi Telegram.</p>
+</blockquote>
+<hr />
+<h2 id="bab-5-manajemen-pesanan">BAB 5 — Manajemen Pesanan</h2>
+<h3 id="membuka-halaman-pesanan">Membuka Halaman Pesanan</h3>
+<p>Klik <strong>“Manajemen Pesanan”</strong> di sidebar.</p>
+<h3 id="memahami-status-pesanan">Memahami Status Pesanan</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Status</th>
+<th>Arti</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>⏳ Pending</td>
+<td>Pesanan baru masuk, belum diproses</td>
+</tr>
+<tr class="even">
+<td>🍳 Diproses</td>
+<td>Dapur sedang menyiapkan</td>
+</tr>
+<tr class="odd">
+<td>🚴 Dikirim</td>
+<td>Kurir sedang mengantar (delivery)</td>
+</tr>
+<tr class="even">
+<td>✅ Disajikan</td>
+<td>Makanan sudah disajikan (dine-in)</td>
+</tr>
+<tr class="odd">
+<td>✅ Selesai</td>
+<td>Pesanan selesai (delivery)</td>
+</tr>
+<tr class="even">
+<td>❌ Dibatalkan</td>
+<td>Pesanan dibatalkan</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mengubah-status-pesanan">Mengubah Status Pesanan</h3>
+<ol type="1">
+<li>Temukan pesanan di tabel</li>
+<li>Klik dropdown di kolom <strong>“Ubah Status”</strong></li>
+<li>Pilih status baru</li>
+<li>Pembeli otomatis mendapat notifikasi Telegram</li>
+</ol>
+<h3 id="assign-kurir-untuk-delivery">Assign Kurir (untuk Delivery)</h3>
+<ol type="1">
+<li>Ubah status pesanan ke <strong>“Diproses”</strong></li>
+<li>Tombol <strong>“Assign Kurir”</strong> muncul di bawah dropdown</li>
+<li>Klik → pilih kurir dari daftar</li>
+<li>Link konfirmasi otomatis dikirim ke WhatsApp kurir</li>
+<li>Pembeli mendapat notifikasi nama &amp; nomor WhatsApp kurir</li>
+</ol>
+<h3 id="filter-pesanan">Filter Pesanan</h3>
+<ul>
+<li>Gunakan filter tanggal untuk melihat pesanan hari tertentu</li>
+<li>Filter tipe: Semua / Dine-in / Delivery</li>
+</ul>
+<hr />
+<h2 id="bab-6-sistem-delivery-kurir">BAB 6 — Sistem Delivery &amp;
+Kurir</h2>
+<h3 id="menambah-kurir">Menambah Kurir</h3>
+<ol type="1">
+<li>Klik <strong>“Manajemen Kurir”</strong> di sidebar</li>
+<li>Klik <strong>“+ Tambah Kurir”</strong></li>
+<li>Isi nama dan nomor WhatsApp kurir</li>
+<li>Klik <strong>Simpan</strong></li>
+</ol>
+<h3 id="alur-pengiriman">Alur Pengiriman</h3>
+<ol type="1">
+<li>Pesanan delivery masuk → admin ubah status ke
+<strong>Diproses</strong></li>
+<li>Klik <strong>Assign Kurir</strong> → pilih kurir</li>
+<li>Sistem generate link unik untuk kurir</li>
+<li>Admin kirim link ke kurir via WhatsApp (tombol tersedia)</li>
+<li>Kurir buka link → lihat detail pesanan + Google Maps</li>
+<li>Kurir antar → klik <strong>“Konfirmasi Sudah Dikirim”</strong></li>
+<li>Pembeli dan admin otomatis dapat notifikasi selesai</li>
+</ol>
+<h3 id="pengaturan-tarif-ongkir">Pengaturan Tarif Ongkir</h3>
+<p>Buka <strong>Pengaturan</strong> → section <strong>“Tarif Ongkos
+Kirim”</strong>: - <strong>Biaya Minimum</strong> — ongkir untuk jarak
+minimum - <strong>Jarak Minimum</strong> — jarak yang dikenakan biaya
+minimum - <strong>Tarif per km</strong> — biaya tambahan per km setelah
+jarak minimum - <strong>Jarak Maksimal</strong> — batas jangkauan
+pengiriman</p>
+<hr />
+<h2 id="bab-7-voucher-promo">BAB 7 — Voucher &amp; Promo</h2>
+<h3 id="membuat-voucher">Membuat Voucher</h3>
+<ol type="1">
+<li>Klik <strong>“Voucher &amp; Promo”</strong> di sidebar</li>
+<li>Klik <strong>“+ Buat Voucher”</strong></li>
+<li>Isi form:
+<ul>
+<li><strong>Kode Voucher</strong> — contoh: DISKON10 (otomatis huruf
+kapital)</li>
+<li><strong>Tipe Diskon</strong> — Persen (%) atau Nominal (Rp)</li>
+<li><strong>Nilai Diskon</strong> — angka diskon</li>
+<li><strong>Minimum Order</strong> — minimum belanja untuk pakai voucher
+(0 = tidak ada minimum)</li>
+<li><strong>Maks. Penggunaan</strong> — batas pemakaian (-1 = tidak
+terbatas)</li>
+<li><strong>Berlaku Hingga</strong> — tanggal kadaluarsa (kosongkan jika
+tidak ada)</li>
+</ul></li>
+<li>Klik <strong>Simpan Voucher</strong></li>
+</ol>
+<h3 id="cara-pembeli-pakai-voucher">Cara Pembeli Pakai Voucher</h3>
+<ol type="1">
+<li>Pembeli tambah item ke keranjang</li>
+<li>Klik Checkout</li>
+<li>Di halaman pembayaran, ada kolom <strong>“🎟️ Kode
+Voucher”</strong></li>
+<li>Ketik kode → klik <strong>Terapkan</strong></li>
+<li>Diskon otomatis terpotong dari total</li>
+</ol>
+<h3 id="menonaktifkanmenghapus-voucher">Menonaktifkan/Menghapus
+Voucher</h3>
+<ul>
+<li>Klik ikon mata untuk aktif/nonaktif</li>
+<li>Klik ikon tempat sampah untuk hapus permanen</li>
+</ul>
+<hr />
+<h2 id="bab-8-stok-inventory">BAB 8 — Stok &amp; Inventory</h2>
+<h3 id="cara-kerja-stok">Cara Kerja Stok</h3>
+<ul>
+<li>Setiap kali ada pesanan masuk, stok otomatis berkurang</li>
+<li>Jika stok = 0, menu otomatis dinonaktifkan</li>
+<li>Admin mendapat notifikasi Telegram jika stok menipis atau habis</li>
+<li>Stok = -1 berarti tidak terbatas (unlimited)</li>
+</ul>
+<h3 id="update-stok-manual">Update Stok Manual</h3>
+<ol type="1">
+<li>Di halaman <strong>Manajemen Menu</strong></li>
+<li>Klik ikon kotak (📦) di baris menu yang ingin diupdate</li>
+<li>Isi jumlah stok baru</li>
+<li>Klik <strong>Simpan</strong></li>
+</ol>
+<blockquote>
+<p>Jika stok diisi ulang (&gt; 0), menu yang sebelumnya nonaktif karena
+stok habis akan otomatis aktif kembali.</p>
+</blockquote>
+<hr />
+<h2 id="bab-9-rating-review">BAB 9 — Rating &amp; Review</h2>
+<h3 id="cara-kerja-rating">Cara Kerja Rating</h3>
+<ol type="1">
+<li>Admin ubah status pesanan ke <strong>“Disajikan”</strong> atau
+<strong>“Selesai”</strong></li>
+<li>Bot otomatis kirim pesan ke pembeli dengan tombol bintang
+⭐⭐⭐⭐⭐</li>
+<li>Pembeli klik bintang untuk beri rating keseluruhan pesanan</li>
+<li>Bot lanjut tanya rating per item menu yang dipesan</li>
+<li>Admin mendapat notifikasi Telegram setiap ada rating masuk</li>
+</ol>
+<h3 id="melihat-rating-di-dashboard">Melihat Rating di Dashboard</h3>
+<ul>
+<li>Di halaman <strong>Manajemen Menu</strong>, kolom
+<strong>Rating</strong> menampilkan rata-rata bintang dan jumlah
+ulasan</li>
+<li>Di halaman menu pembeli, rating tampil di bawah nama menu</li>
+</ul>
+<hr />
+<h2 id="bab-10-riwayat-pelanggan">BAB 10 — Riwayat Pelanggan</h2>
+<h3 id="membuka-halaman-pelanggan">Membuka Halaman Pelanggan</h3>
+<p>Klik <strong>“Riwayat Pelanggan”</strong> di sidebar.</p>
+<h3 id="informasi-yang-tersedia">Informasi yang Tersedia</h3>
+<ul>
+<li>Nama pelanggan + avatar inisial</li>
+<li>Badge status: ⭐ Setia (≥10x pesan), Regular (≥5x), Baru</li>
+<li>Total pesanan, dine-in, delivery</li>
+<li>Total belanja keseluruhan</li>
+<li>Menu favorit (3 teratas)</li>
+<li>Tanggal terakhir pesan</li>
+</ul>
+<h3 id="kirim-pesan-promo-ke-pelanggan">Kirim Pesan Promo ke
+Pelanggan</h3>
+<ol type="1">
+<li>Temukan pelanggan yang punya Telegram (ada tombol
+<strong>Kirim</strong>)</li>
+<li>Klik tombol <strong>Kirim</strong></li>
+<li>Tulis pesan promo (contoh: kode voucher, info menu baru, ucapan
+terima kasih)</li>
+<li>Klik <strong>Kirim Pesan</strong></li>
+<li>Pesan langsung masuk ke Telegram pelanggan atas nama restoran</li>
+</ol>
+<hr />
+<h2 id="bab-11-laporan-penjualan">BAB 11 — Laporan Penjualan</h2>
+<h3 id="membuka-laporan">Membuka Laporan</h3>
+<p>Klik <strong>“Laporan Penjualan”</strong> di sidebar.</p>
+<h3 id="memilih-tanggal">Memilih Tanggal</h3>
+<p>Gunakan input tanggal di bagian atas untuk melihat laporan hari
+tertentu.</p>
+<h3 id="isi-laporan">Isi Laporan</h3>
+<ul>
+<li><strong>Subtotal Penjualan</strong> — total harga menu sebelum
+pajak/service</li>
+<li><strong>Service Charge</strong> — jika diaktifkan di pengaturan</li>
+<li><strong>PBJT</strong> — Pajak Barang dan Jasa Tertentu, jika
+diaktifkan</li>
+<li><strong>Total Revenue</strong> — total pendapatan keseluruhan</li>
+<li><strong>Tabel per kategori</strong> — rincian penjualan per
+menu</li>
+</ul>
+<h3 id="mencetak-laporan">Mencetak Laporan</h3>
+<p>Klik tombol <strong>“🖨️ Cetak Laporan”</strong> → browser membuka
+dialog print → pilih <strong>Save as PDF</strong> atau printer.</p>
+<p>Laporan cetak sudah dilengkapi: - Kop surat dengan nama restoran -
+Kolom tanda tangan (Kasir &amp; Manager) - Nomor halaman dan tanggal
+cetak</p>
+<hr />
+<h2 id="bab-12-laporan-harian-otomatis">BAB 12 — Laporan Harian
+Otomatis</h2>
+<h3 id="cara-kerja">Cara Kerja</h3>
+<p>Setiap hari pada jam yang dikonfigurasi (default: <strong>22:00
+WIB</strong>), sistem otomatis mengirim ringkasan penjualan ke Telegram
+admin dan owner.</p>
+<h3 id="isi-laporan-harian">Isi Laporan Harian</h3>
+<ul>
+<li>Total pesanan hari ini</li>
+<li>Pesanan selesai, dibatalkan, dine-in, delivery</li>
+<li>Total pendapatan (termasuk tax &amp; service)</li>
+<li>Perbandingan dengan kemarin (naik/turun)</li>
+<li>3 menu terlaris hari ini</li>
+</ul>
+<h3 id="mengatur-jam-pengiriman">Mengatur Jam Pengiriman</h3>
+<ol type="1">
+<li>Buka <strong>Pengaturan</strong></li>
+<li>Section <strong>“Ringkasan Harian Otomatis”</strong></li>
+<li>Ubah jam dan menit</li>
+<li>Aktifkan/nonaktifkan toggle</li>
+<li>Klik <strong>Simpan Pengaturan</strong></li>
+</ol>
+<h3 id="menambah-penerima-owner">Menambah Penerima Owner</h3>
+<ol type="1">
+<li>Buka <strong>Pengaturan</strong></li>
+<li>Section <strong>“Ringkasan Harian Otomatis”</strong></li>
+<li>Isi <strong>ID Telegram Owner</strong> (dapatkan dari <span
+class="citation" data-cites="userinfobot">@userinfobot</span> di
+Telegram)</li>
+<li>Klik <strong>Simpan Pengaturan</strong></li>
+</ol>
+<h3 id="test-kirim-laporan">Test Kirim Laporan</h3>
+<p>Buka browser, akses:</p>
+<pre><code>https://xxxx-xxxx.trycloudflare.com/api/send-daily-report</code></pre>
+<hr />
+<h2 id="bab-13-backup-reset-database">BAB 13 — Backup &amp; Reset
+Database</h2>
+<h3 id="backup-otomatis">Backup Otomatis</h3>
+<p>Sistem otomatis backup database setiap hari jam <strong>02:00
+WIB</strong>. - File disimpan di folder <code>backups/</code> dengan
+nama <code>restaurant_YYYY-MM-DD.db</code> - Backup lebih dari 30 hari
+otomatis dihapus - Admin mendapat notifikasi Telegram setelah backup
+berhasil</p>
+<h3 id="backup-manual">Backup Manual</h3>
+<ol type="1">
+<li>Buka <strong>Pengaturan</strong></li>
+<li>Scroll ke bawah → section <strong>“Backup &amp; Reset
+Database”</strong></li>
+<li>Klik <strong>“Backup Sekarang”</strong></li>
+<li>Konfirmasi file berhasil disimpan</li>
+</ol>
+<h3 id="melihat-daftar-backup">Melihat Daftar Backup</h3>
+<p>Klik <strong>“Lihat Daftar Backup”</strong> untuk melihat semua file
+backup yang tersimpan.</p>
+<h3 id="reset-data-pesanan">Reset Data Pesanan</h3>
+<blockquote>
+<p>⚠️ <strong>PERHATIAN:</strong> Tindakan ini menghapus semua data
+pesanan secara permanen. Backup otomatis dibuat sebelum reset.</p>
+</blockquote>
+<p><strong>Kapan perlu reset?</strong> Biasanya dilakukan setiap pagi
+sebelum restoran buka, setelah backup otomatis jam 02:00 sudah
+berjalan.</p>
+<p><strong>Cara reset:</strong> 1. Buka <strong>Pengaturan</strong> 2.
+Scroll ke bawah → section <strong>“Backup &amp; Reset Database”</strong>
+3. Klik <strong>“Reset Data Pesanan”</strong> 4. Ketik
+<code>RESET</code> (huruf kapital) di kolom konfirmasi 5. Klik
+<strong>“Konfirmasi Reset”</strong></p>
+<p><strong>Yang dihapus saat reset:</strong> - ✅ Data pesanan (orders)
+- ✅ Rating &amp; review - ✅ Log stok</p>
+<p><strong>Yang TIDAK dihapus:</strong> - ❌ Data menu - ❌ Data kurir -
+❌ Voucher - ❌ Pengaturan sistem - ❌ Data pelanggan (tg_sessions)</p>
+<hr />
+<h2 id="bab-14-pengaturan-sistem">BAB 14 — Pengaturan Sistem</h2>
+<h3 id="informasi-restaurant">Informasi Restaurant</h3>
+<ul>
+<li><strong>Nama Restaurant</strong> — tampil di semua halaman, bot, dan
+invoice</li>
+</ul>
+<h3 id="koordinat-restaurant">Koordinat Restaurant</h3>
+<p>Digunakan untuk menghitung jarak delivery. 1. Klik <strong>“Gunakan
+Lokasi Saya Sekarang”</strong> untuk otomatis isi koordinat 2. Atau isi
+manual dari Google Maps (klik kanan → “What’s here?”)</p>
+<h3 id="tarif-ongkos-kirim">Tarif Ongkos Kirim</h3>
+<ul>
+<li><strong>Biaya Minimum</strong> — ongkir untuk jarak ≤ jarak
+minimum</li>
+<li><strong>Jarak Minimum</strong> — contoh: 1 km</li>
+<li><strong>Tarif per km</strong> — biaya tambahan per km</li>
+<li><strong>Jarak Maksimal</strong> — batas pengiriman</li>
+</ul>
+<p><strong>Contoh:</strong> Biaya minimum Rp 5.000 untuk 1 km pertama,
+Rp 3.000/km setelahnya, maksimal 10 km.</p>
+<h3 id="tax-service-charge">Tax &amp; Service Charge</h3>
+<ul>
+<li>Toggle <strong>Service Charge</strong> — aktif/nonaktif</li>
+<li><strong>Rate Service</strong> — persentase (default 10%)</li>
+<li>Toggle <strong>PBJT</strong> — aktif/nonaktif</li>
+<li><strong>Rate PBJT</strong> — persentase (default 11%)</li>
+</ul>
+<blockquote>
+<p>Jika dinonaktifkan, tax/service tidak muncul di invoice, bot pembeli,
+maupun laporan.</p>
+</blockquote>
+<h3 id="upload-qris">Upload QRIS</h3>
+<ol type="1">
+<li>Klik <strong>“Pilih File QRIS”</strong></li>
+<li>Pilih gambar QRIS dari komputer (JPG/PNG)</li>
+<li>Klik <strong>“Upload QRIS”</strong></li>
+<li>QRIS baru langsung tampil di halaman pembayaran bot</li>
+</ol>
+<hr />
+<h2 id="bab-15-panduan-untuk-pembeli">BAB 15 — Panduan untuk
+Pembeli</h2>
+<h3 id="cara-memesan-dine-in">Cara Memesan (Dine-in)</h3>
+<ol type="1">
+<li>Buka bot Telegram restoran</li>
+<li>Ketik <code>/start</code> atau klik tombol
+<strong>Start</strong></li>
+<li>Pilih <strong>“🍽️ Makan di Tempat”</strong></li>
+<li>Isi <strong>Nama Pemesan</strong> dan <strong>Nomor
+Meja</strong></li>
+<li>Pilih menu yang diinginkan (klik tombol +)</li>
+<li>Tambahkan catatan per item jika perlu</li>
+<li>Klik <strong>“Checkout”</strong> di bagian bawah</li>
+<li>Cek rincian pesanan</li>
+<li>Masukkan kode voucher jika ada</li>
+<li>Scan QRIS untuk pembayaran</li>
+<li>Klik <strong>“SAYA SUDAH BAYAR ✓”</strong></li>
+<li>Invoice otomatis dikirim ke Telegram</li>
+</ol>
+<h3 id="cara-memesan-delivery">Cara Memesan (Delivery)</h3>
+<ol type="1">
+<li>Buka bot Telegram restoran</li>
+<li>Pilih <strong>“🛵 Pesan Antar (Online)”</strong></li>
+<li>Isi <strong>Nama</strong>, <strong>Nomor WhatsApp</strong>, dan
+<strong>Alamat Pengiriman</strong></li>
+<li>Klik <strong>“Gunakan Lokasi GPS Saya”</strong> untuk deteksi
+otomatis</li>
+<li>Ongkos kirim otomatis terhitung</li>
+<li>Pilih menu → Checkout → Bayar QRIS</li>
+<li>Tunggu konfirmasi dari restoran</li>
+<li>Kurir akan menghubungi via WhatsApp</li>
+</ol>
+<h3 id="memberikan-rating">Memberikan Rating</h3>
+<p>Setelah pesanan selesai, bot otomatis mengirim pesan dengan tombol
+bintang. Klik bintang 1–5 untuk beri rating pesanan dan setiap menu yang
+dipesan.</p>
+<hr />
+<h2 id="bab-16-troubleshooting">BAB 16 — Troubleshooting</h2>
+<h3 id="bot-tidak-merespons-setelah-restart-server">Bot tidak merespons
+setelah restart server</h3>
+<p><strong>Solusi:</strong> Buka browser, akses:</p>
+<pre><code>https://xxxx-xxxx.trycloudflare.com/set_webhook</code></pre>
+<h3 id="invoice-tidak-terkirim-ke-pembeli">Invoice tidak terkirim ke
+pembeli</h3>
+<p><strong>Penyebab:</strong> Library Pillow belum terinstall.
+<strong>Solusi:</strong></p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ~/venv_sgo/bin/activate</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install Pillow==10.4.0</span></code></pre></div>
+<p>Lalu restart server.</p>
+<h3 id="tombol-rating-tidak-bisa-diklik">Tombol rating tidak bisa
+diklik</h3>
+<p><strong>Penyebab:</strong> Webhook tidak menerima callback_query.
+<strong>Solusi:</strong> Reset webhook:</p>
+<pre><code>https://xxxx-xxxx.trycloudflare.com/set_webhook</code></pre>
+<h3 id="halaman-admin-tidak-bisa-dibuka-redirect-ke-login-terus">Halaman
+admin tidak bisa dibuka (redirect ke login terus)</h3>
+<p><strong>Penyebab:</strong> Session expired atau cookie terhapus.
+<strong>Solusi:</strong> Login ulang dengan username dan password.</p>
+<h3 id="server-tidak-bisa-start">Server tidak bisa start</h3>
+<p><strong>Penyebab:</strong> Port 8000 sudah dipakai proses lain.
+<strong>Solusi:</strong></p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pkill</span> <span class="at">-f</span> <span class="st">&quot;python main.py&quot;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> /mnt/c/Users/user/Desktop/SGO_Nexa/start.sh</span></code></pre></div>
+<h3 id="backup-tidak-berjalan-otomatis">Backup tidak berjalan
+otomatis</h3>
+<p><strong>Penyebab:</strong> Server tidak menyala pada jam 02:00 WIB.
+<strong>Solusi:</strong> Lakukan backup manual dari halaman Pengaturan
+sebelum matikan laptop.</p>
+<hr />
+<h2 id="rutinitas-harian-yang-disarankan">Rutinitas Harian yang
+Disarankan</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Waktu</th>
+<th>Kegiatan</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Sebelum buka (08:00–09:00)</td>
+<td>Start server, reset database (opsional)</td>
+</tr>
+<tr class="even">
+<td>Saat operasional</td>
+<td>Monitor pesanan dari dashboard</td>
+</tr>
+<tr class="odd">
+<td>22:00</td>
+<td>Laporan harian otomatis terkirim ke owner &amp; admin</td>
+</tr>
+<tr class="even">
+<td>02:00</td>
+<td>Backup otomatis berjalan</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="informasi-pengembang">Informasi Pengembang</h2>
+<p><strong>Sentra Guest OS</strong> Pengembang Sistem Digital untuk UMKM
+&amp; Restoran</p>
+<p>Kami menyediakan solusi teknologi terjangkau untuk membantu bisnis
+restoran dan UMKM berkembang di era digital.</p>
+<p>📱 WhatsApp: <a href="https://wa.me/6289639541438">089639541438</a>
+📧 Email: sentraguest.os@gmail.com © 2026 Sentra Guest OS. All rights
+reserved.</p>
+<hr />
+<p><em>Dokumen ini adalah panduan resmi penggunaan sistem SGO v2.1.</em>
+<em>Dilarang memperbanyak atau mendistribusikan tanpa izin tertulis dari
+Sentra Guest OS.</em></p>

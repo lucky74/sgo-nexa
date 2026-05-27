@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin &mdash; {{ restaurant_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4A1D6E;
+            --primary-light: #6B2FA0;
+            --primary-dark: #2D1142;
+            --accent: #F0A500;
+            --sidebar-width: 240px;
+            --bg: #F5F6FA;
+            --card-bg: #FFFFFF;
+            --text: #1A1D23;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+            --success: #10B981;
+            --danger: #EF4444;
+            --info: #3B82F6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.875rem;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--primary-dark);
+            min-height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+        .sidebar-brand {
+            padding: 24px 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .sidebar-brand .brand-logo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+        .sidebar-brand .brand-sub {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.45);
+            margin-top: 2px;
+        }
+        .sidebar-nav { padding: 16px 0; flex: 1; overflow-y: auto; }
+        .nav-section-title {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 8px 20px 4px;
+        }
+        .nav-item-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            color: rgba(255,255,255,0.65);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .nav-item-link:hover, .nav-item-link.active {
+            color: #fff;
+            background: rgba(255,255,255,0.07);
+            border-left-color: var(--accent);
+        }
+        .nav-item-link i { width: 18px; text-align: center; font-size: 0.9rem; }
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* ── MAIN CONTENT ── */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 0 28px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .topbar-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+        /* ── PAGE BODY ── */
+        .page-body { padding: 24px 28px; }
+
+        /* ── STAT CARDS ── */
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .stat-icon {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        .stat-icon.purple { background: rgba(74,29,110,0.1); color: var(--primary); }
+        .stat-icon.green  { background: rgba(16,185,129,0.1); color: var(--success); }
+        .stat-icon.gold   { background: rgba(240,165,0,0.1); color: var(--accent); }
+        .stat-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+        .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+
+        /* ── TABLE CARD ── */
+        .table-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .table-card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .table-card-header h6 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 0;
+        }
+        .table { margin: 0; font-size: 0.82rem; }
+        .table thead th {
+            background: #FAFAFA;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 16px;
+            white-space: nowrap;
+        }
+        .table tbody td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #F3F4F6;
+            vertical-align: middle;
+            color: var(--text);
+        }
+        .table tbody tr:last-child td { border-bottom: none; }
+        .table tbody tr:hover td { background: #FAFBFF; }
+
+        .menu-thumb {
+            width: 44px; height: 44px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .menu-thumb-placeholder {
+            width: 44px; height: 44px;
+            border-radius: 8px;
+            background: #F3F4F6;
+            display: flex; align-items: center; justify-content: center;
+            color: #D1D5DB;
+            font-size: 1.1rem;
+        }
+
+        .badge-category {
+            background: rgba(74,29,110,0.1);
+            color: var(--primary);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+        .badge-cuisine {
+            background: rgba(59,130,246,0.1);
+            color: var(--info);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+        .price-text { font-weight: 600; color: var(--primary); }
+
+        /* ── BUTTONS ── */
+        .btn-primary-custom {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+        .btn-primary-custom:hover { background: var(--primary-light); color: #fff; }
+
+        .btn-outline-custom {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .btn-outline-custom:hover { border-color: var(--primary); color: var(--primary); }
+
+        .btn-danger-sm {
+            background: rgba(239,68,68,0.08);
+            color: var(--danger);
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-danger-sm:hover { background: rgba(239,68,68,0.18); }
+
+        .btn-edit-sm {
+            background: rgba(59,130,246,0.08);
+            color: var(--info);
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-edit-sm:hover { background: rgba(59,130,246,0.18); }
+
+        .btn-toggle-sm {
+            background: rgba(107,114,128,0.1);
+            color: var(--text-muted);
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-toggle-sm.active {
+            background: rgba(16,185,129,0.1);
+            color: var(--success);
+        }
+        .btn-toggle-sm:hover { opacity: 0.8; }
+
+        .badge-available {
+            background: rgba(16,185,129,0.12);
+            color: var(--success);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+        .badge-unavailable {
+            background: rgba(107,114,128,0.12);
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
+        /* Stock badges */
+        .stock-ok   { color: var(--success); font-weight: 600; font-size: 0.82rem; }
+        .stock-low  { color: var(--accent);  font-weight: 600; font-size: 0.82rem; }
+        .stock-out  { color: var(--danger);  font-weight: 600; font-size: 0.82rem; }
+        .stock-inf  { color: var(--text-muted); font-size: 0.82rem; }
+
+        /* Rating stars */
+        .rating-stars { color: #F0A500; font-size: 0.78rem; }
+        .rating-count { color: var(--text-muted); font-size: 0.72rem; }
+
+        .btn-stock-sm {
+            background: rgba(240,165,0,0.1);
+            color: var(--accent);
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-stock-sm:hover { background: rgba(240,165,0,0.2); }
+
+        /* ── MODAL ── */
+        .modal-content { border: none; border-radius: 14px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .modal-header {
+            background: var(--primary-dark);
+            color: #fff;
+            border-radius: 14px 14px 0 0;
+            padding: 18px 24px;
+            border: none;
+        }
+        .modal-header .btn-close { filter: invert(1); }
+        .modal-title { font-size: 0.95rem; font-weight: 600; }
+        .modal-body { padding: 24px; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); }
+
+        .form-label { font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+        .form-control, .form-select {
+            font-size: 0.83rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: var(--text);
+            transition: border-color 0.2s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74,29,110,0.1);
+        }
+        .form-text { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* Image preview */
+        #imagePreview {
+            width: 100%; height: 140px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: none;
+            margin-top: 8px;
+        }
+
+        /* Search */
+        .search-input {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 7px 12px 7px 34px;
+            font-size: 0.82rem;
+            background: #F9FAFB url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;
+            width: 220px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus { border-color: var(--primary); }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state i { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.3; }
+        .empty-state p { font-size: 0.85rem; }
+
+        /* Toast */
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; }
+        .toast-msg {
+            background: #1A1D23;
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 0.83rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to   { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">{{ restaurant_name if restaurant_name else 'Restaurant' }}</div>
+        {% if is_outlet %}
+        <div class="brand-sub" style="color:#F0A500;">Outlet #{{ outlet_id }}</div>
+        {% else %}
+        <div class="brand-sub">Restaurant Management</div>
+        {% endif %}
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Menu</div>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/dashboard{% else %}/dashboard{% endif %}" class="nav-item-link active">
+            <i class="fas fa-utensils"></i> Manajemen Menu
+        </a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/sales-report{% else %}/sales-report{% endif %}" class="nav-item-link">
+            <i class="fas fa-chart-bar"></i> Laporan Penjualan
+        </a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/orders{% else %}/orders{% endif %}" class="nav-item-link">
+            <i class="fas fa-receipt"></i> Manajemen Pesanan
+        </a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/couriers{% else %}/couriers{% endif %}" class="nav-item-link">
+            <i class="fas fa-motorcycle"></i> Manajemen Kurir
+        </a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/vouchers{% else %}/vouchers{% endif %}" class="nav-item-link">
+            <i class="fas fa-ticket-alt"></i> Voucher & Promo
+        </a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/customers{% else %}/customers{% endif %}" class="nav-item-link">
+            <i class="fas fa-users"></i> Riwayat Pelanggan
+        </a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/settings{% else %}/settings{% endif %}" class="nav-item-link">
+            <i class="fas fa-cog"></i> Pengaturan
+        </a>
+        <div class="nav-section-title" style="margin-top:12px;">Akses</div>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}{% else %}/{% endif %}" target="_blank" class="nav-item-link">
+            <i class="fas fa-external-link-alt"></i> Lihat Menu Tamu
+        </a>
+        <a href="#" class="nav-item-link" onclick="showQRCode()">
+            <i class="fas fa-qrcode"></i> QR Code Menu
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <div style="margin-bottom:6px;color:rgba(255,255,255,0.5);font-size:0.72rem;">
+            <i class="fas fa-user-circle" style="margin-right:4px;"></i>
+            {{ username }}
+            <span style="background:rgba(240,165,0,0.2);color:#F0A500;padding:1px 6px;border-radius:10px;font-size:0.65rem;margin-left:4px;">admin</span>
+        </div>
+        SGO v2.1 &copy; {{ current_year }}
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/logout{% else %}/logout{% endif %}" style="display:block;margin-top:8px;color:rgba(255,255,255,0.4);font-size:0.7rem;text-decoration:none;transition:color 0.2s;"
+           onmouseover="this.style.color='#EF4444'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
+            <i class="fas fa-sign-out-alt"></i> Keluar
+        </a>
+    </div>
+</aside>
+
+<!-- ── MAIN CONTENT ── -->
+<div class="main-content">
+
+    <!-- Topbar -->
+    <div class="topbar">
+        <span class="topbar-title">Manajemen Menu</span>
+        <div class="topbar-actions">
+            <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/sales-report{% else %}/sales-report{% endif %}" class="btn-outline-custom">
+                <i class="fas fa-chart-bar"></i> Laporan
+            </a>
+            <button class="btn-primary-custom" data-bs-toggle="modal" data-bs-target="#addMenuModal">
+                <i class="fas fa-plus"></i> Tambah Menu
+            </button>
+        </div>
+    </div>
+
+    <!-- Page Body -->
+    <div class="page-body">
+
+        <!-- Stat Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon purple"><i class="fas fa-utensils"></i></div>
+                    <div>
+                        <div class="stat-label">Total Item Menu</div>
+                        <div class="stat-value">{{ items|length }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+                    <div>
+                        <div class="stat-label">Menu Tersedia</div>
+                        <div class="stat-value">{{ items|selectattr('is_available')|list|length }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon gold"><i class="fas fa-tags"></i></div>
+                    <div>
+                        <div class="stat-label">Kategori</div>
+                        <div class="stat-value">{{ items|map(attribute='category')|unique|list|length }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Card -->
+        <div class="table-card">
+            <div class="table-card-header">
+                <h6><i class="fas fa-list me-2" style="color:var(--primary)"></i>Daftar Item Menu</h6>
+                <input type="text" class="search-input" id="searchInput" placeholder="Cari menu..." onkeyup="filterTable()">
+            </div>
+            <div class="table-responsive">
+                <table class="table" id="menuTable">
+                    <thead>
+                        <tr>
+                            <th style="width:56px">Foto</th>
+                            <th>Nama Menu</th>
+                            <th>Kategori</th>
+                            <th>Cuisine</th>
+                            <th>Harga</th>
+                            <th style="max-width:220px">Deskripsi</th>
+                            <th style="width:80px" class="text-center">Stok</th>
+                            <th style="width:80px" class="text-center">Rating</th>
+                            <th style="width:80px" class="text-center">Status</th>
+                            <th style="width:150px" class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>
+                                {% if item.image_url %}
+                                <img src="{{ item.image_url }}" class="menu-thumb" alt="{{ item.name }}"
+                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                <div class="menu-thumb-placeholder" style="display:none"><i class="fas fa-image"></i></div>
+                                {% else %}
+                                <div class="menu-thumb-placeholder"><i class="fas fa-image"></i></div>
+                                {% endif %}
+                            </td>
+                            <td><span class="fw-600" style="font-weight:600">{{ item.name }}</span></td>
+                            <td><span class="badge-category">{{ item.category }}</span></td>
+                            <td><span class="badge-cuisine">{{ item.cuisine or '&mdash;' }}</span></td>
+                            <td><span class="price-text">Rp {{ "{:,.0f}".format(item.price).replace(',', '.') }}</span></td>
+                            <td style="max-width:220px">
+                                <span class="text-muted" style="font-size:0.78rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">
+                                    {{ item.description or '&mdash;' }}
+                                </span>
+                            </td>
+                            <td class="text-center" id="stock-cell-{{ item.id }}">
+                                {% if item.stock == -1 %}
+                                <span class="stock-inf">∞</span>
+                                {% elif item.stock == 0 %}
+                                <span class="stock-out">0</span>
+                                {% elif item.stock <= item.stock_alert %}
+                                <span class="stock-low">{{ item.stock }}</span>
+                                {% else %}
+                                <span class="stock-ok">{{ item.stock }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if item.avg_rating and item.avg_rating > 0 %}
+                                <span class="rating-stars">⭐ {{ "%.1f"|format(item.avg_rating) }}</span><br>
+                                <span class="rating-count">({{ item.review_count }})</span>
+                                {% else %}
+                                <span class="rating-count">&mdash;</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if item.is_available %}
+                                <span class="badge-available">Aktif</span>
+                                {% else %}
+                                <span class="badge-unavailable">Nonaktif</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <div style="display:flex;gap:4px;justify-content:center;align-items:center;flex-wrap:wrap;">
+                                    <button class="btn-toggle-sm {% if item.is_available %}active{% endif %}"
+                                            onclick="toggleItem({{ item.id }}, this)"
+                                            title="{{ 'Nonaktifkan' if item.is_available else 'Aktifkan' }}">
+                                        <i class="fas fa-{% if item.is_available %}eye{% else %}eye-slash{% endif %}"></i>
+                                    </button>
+                                    <button class="btn-stock-sm" onclick="openStockModal({{ item.id }}, '{{ item.name|replace("'", "\\'") }}', {{ item.stock }}, {{ item.stock_alert }})"
+                                            title="Edit Stok">
+                                        <i class="fas fa-boxes"></i>
+                                    </button>
+                                    <button class="btn-edit-sm" onclick="openEditModal({{ item.id }}, '{{ item.name|replace("'", "\\'") }}', '{{ item.category }}', '{{ item.cuisine or '' }}', {{ item.price }}, '{{ item.description|replace("'", "\\'")|replace('\n', ' ') }}', '{{ item.image_url or '' }}')"
+                                            title="Edit">
+                                        <i class="fas fa-pen"></i>
+                                    </button>
+                                    <button class="btn-danger-sm" onclick="deleteItem({{ item.id }}, '{{ item.name|replace("'", "\\'") }}')"
+                                            title="Hapus">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="10">
+                                <div class="empty-state">
+                                    <i class="fas fa-utensils d-block"></i>
+                                    <p>Belum ada item menu. Klik <strong>Tambah Menu</strong> untuk mulai.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div><!-- /page-body -->
+</div><!-- /main-content -->
+
+
+<!-- ── MODAL TAMBAH MENU ── -->
+<div class="modal fade" id="addMenuModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>Tambah Item Menu Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{% if is_outlet %}/outlet/{{ outlet_id }}/api/menu{% else %}/api/menu{% endif %}" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Nama Menu <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control" placeholder="Contoh: Nasi Goreng Spesial" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Kategori <span class="text-danger">*</span></label>
+                            <select name="category" class="form-select" required>
+                                <option value="" disabled selected>Pilih kategori...</option>
+                                <option>Appetizer</option>
+                                <option>Soup</option>
+                                <option>Main Course</option>
+                                <option>Dessert</option>
+                                <option>Drink</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Cuisine (Asal Masakan)</label>
+                            <select name="cuisine" class="form-select">
+                                <option value="" disabled selected>Pilih cuisine...</option>
+                                <option>Indonesian Food</option>
+                                <option>Western Food</option>
+                                <option>Japanese Food</option>
+                                <option>Korean Food</option>
+                                <option>Chinese Food</option>
+                                <option>Fusion Food</option>
+                                <option>Middle Eastern</option>
+                                <option>Thai Food</option>
+                                <option>Italian Food</option>
+                                <option>Indian Food</option>
+                                <option>Mexican Food</option>
+                                <option>Vietnamese Food</option>
+                                <option>Mediterranean Food</option>
+                                <option>French Food</option>
+                                <option>Spanish Food</option>
+                                <option>Turkish Food</option>
+                                <option>Singaporean &amp; Malaysian Food</option>
+                                <option>Brazilian Food</option>
+                                <option>Peruvian Food</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Harga (Rp) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="font-size:0.82rem;background:#F9FAFB;border-color:var(--border)">Rp</span>
+                                <input type="number" name="price" class="form-control" placeholder="0" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Deskripsi</label>
+                            <textarea name="description" class="form-control" rows="2" placeholder="Deskripsi singkat menu..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Foto Produk <span class="text-danger">*</span></label>
+                            <input type="file" name="image_file" class="form-control" accept="image/*" required onchange="previewImage(this)">
+                            <div class="form-text">Format JPG / PNG. Ukuran maks 5MB.</div>
+                            <img id="imagePreview" src="" alt="Preview">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline-custom" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn-primary-custom"><i class="fas fa-save"></i> Simpan Menu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL EDIT MENU ── -->
+<div class="modal fade" id="editMenuModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-pen me-2"></i>Edit Item Menu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editMenuForm" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Nama Menu <span class="text-danger">*</span></label>
+                            <input type="text" name="name" id="editName" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Kategori <span class="text-danger">*</span></label>
+                            <select name="category" id="editCategory" class="form-select" required>
+                                <option value="" disabled>Pilih kategori...</option>
+                                <option>Appetizer</option>
+                                <option>Soup</option>
+                                <option>Main Course</option>
+                                <option>Dessert</option>
+                                <option>Drink</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Cuisine (Asal Masakan)</label>
+                            <select name="cuisine" id="editCuisine" class="form-select">
+                                <option value="">&mdash; Tidak ada &mdash;</option>
+                                <option>Indonesian Food</option>
+                                <option>Western Food</option>
+                                <option>Japanese Food</option>
+                                <option>Korean Food</option>
+                                <option>Chinese Food</option>
+                                <option>Fusion Food</option>
+                                <option>Middle Eastern</option>
+                                <option>Thai Food</option>
+                                <option>Italian Food</option>
+                                <option>Indian Food</option>
+                                <option>Mexican Food</option>
+                                <option>Vietnamese Food</option>
+                                <option>Mediterranean Food</option>
+                                <option>French Food</option>
+                                <option>Spanish Food</option>
+                                <option>Turkish Food</option>
+                                <option>Singaporean &amp; Malaysian Food</option>
+                                <option>Brazilian Food</option>
+                                <option>Peruvian Food</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Harga (Rp) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text" style="font-size:0.82rem;background:#F9FAFB;border-color:var(--border)">Rp</span>
+                                <input type="number" name="price" id="editPrice" class="form-control" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Deskripsi</label>
+                            <textarea name="description" id="editDescription" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Foto Produk (kosongkan jika tidak ingin mengubah)</label>
+                            <input type="file" name="image_file" id="editImageFile" class="form-control" accept="image/*" onchange="previewEditImage(this)">
+                            <div class="form-text">Format JPG / PNG. Ukuran maks 5MB.</div>
+                            <img id="editImagePreview" src="" alt="Preview" style="width:100%;height:140px;object-fit:cover;border-radius:8px;border:1px solid var(--border);display:none;margin-top:8px;">
+                            <div id="editCurrentImage" style="margin-top:8px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline-custom" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn-primary-custom"><i class="fas fa-save"></i> Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL STOCK ── -->
+<div class="modal fade" id="stockModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-boxes me-2"></i>Edit Stok</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="stockItemName" style="font-weight:600;margin-bottom:16px;color:var(--text);"></p>
+                <div class="mb-3">
+                    <label class="form-label">Jumlah Stok</label>
+                    <input type="number" id="stockValue" class="form-control" min="-1" placeholder="-1 = tidak terbatas">
+                    <div class="form-text">Isi -1 untuk stok tidak terbatas (∞)</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Batas Peringatan Stok</label>
+                    <input type="number" id="stockAlert" class="form-control" min="0" placeholder="5">
+                    <div class="form-text">Notifikasi dikirim saat stok ≤ nilai ini</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-outline-custom" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn-primary-custom" onclick="saveStock()"><i class="fas fa-save"></i> Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL QR CODE ── -->
+<div class="modal fade" id="qrModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-qrcode me-2"></i>QR Code Menu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="text-muted mb-3" style="font-size:0.8rem">Scan untuk membuka menu pelanggan</p>
+                <div id="qrcode" class="d-flex justify-content-center mb-3"></div>
+                <p class="text-muted" style="font-size:0.72rem" id="qrUrlText"></p>
+                <button class="btn-primary-custom w-100 justify-content-center mt-2" onclick="window.print()">
+                    <i class="fas fa-print"></i> Print QR Code
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+    function showToast(msg, type='success') {
+        const icon = type === 'success' ? '✅' : '❌';
+        const el = document.createElement('div');
+        el.className = 'toast-msg';
+        el.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+        document.getElementById('toastContainer').appendChild(el);
+        setTimeout(() => el.remove(), 3000);
+    }
+
+    // Helper untuk mendapatkan base path API
+    const API_BASE = {% if is_outlet %}`/outlet/{{ outlet_id }}`{% else %}``{% endif %};
+
+    function deleteItem(id, name) {
+        if (!confirm(`Hapus menu "${name}"?\nTindakan ini tidak dapat dibatalkan.`)) return;
+        fetch(`${API_BASE}/api/menu/delete/${id}`, { method: 'POST' })
+            .then(r => { if (r.redirected || r.ok) { showToast(`"${name}" berhasil dihapus`); setTimeout(() => location.reload(), 800); } })
+            .catch(() => showToast('Gagal menghapus menu', 'error'));
+    }
+
+    function toggleItem(id, btn) {
+        fetch(`${API_BASE}/api/menu/toggle/${id}`, { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    const isActive = data.is_available === 1;
+                    // Update button style
+                    btn.classList.toggle('active', isActive);
+                    btn.title = isActive ? 'Nonaktifkan' : 'Aktifkan';
+                    btn.querySelector('i').className = `fas fa-${isActive ? 'eye' : 'eye-slash'}`;
+                    // Update status badge in same row
+                    const row = btn.closest('tr');
+                    const badge = row.querySelector('.badge-available, .badge-unavailable');
+                    if (badge) {
+                        badge.className = isActive ? 'badge-available' : 'badge-unavailable';
+                        badge.textContent = isActive ? 'Aktif' : 'Nonaktif';
+                    }
+                    showToast(isActive ? 'Menu diaktifkan' : 'Menu dinonaktifkan');
+                } else {
+                    showToast('Gagal mengubah status', 'error');
+                }
+            })
+            .catch(() => showToast('Gagal mengubah status', 'error'));
+    }
+
+    function openEditModal(id, name, category, cuisine, price, description, imageUrl) {
+        document.getElementById('editMenuForm').action = `${API_BASE}/api/menu/edit/${id}`;
+        document.getElementById('editName').value = name;
+        document.getElementById('editPrice').value = price;
+        document.getElementById('editDescription').value = description;
+
+        // Set category
+        const catSel = document.getElementById('editCategory');
+        for (let opt of catSel.options) {
+            opt.selected = opt.value === category;
+        }
+
+        // Set cuisine
+        const cuiSel = document.getElementById('editCuisine');
+        for (let opt of cuiSel.options) {
+            opt.selected = opt.value === cuisine;
+        }
+
+        // Show current image
+        const currentImgDiv = document.getElementById('editCurrentImage');
+        const preview = document.getElementById('editImagePreview');
+        preview.style.display = 'none';
+        document.getElementById('editImageFile').value = '';
+        if (imageUrl) {
+            currentImgDiv.innerHTML = `<p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;">Foto saat ini:</p>
+                <img src="${imageUrl}" style="width:80px;height:60px;object-fit:cover;border-radius:6px;border:1px solid var(--border);">`;
+        } else {
+            currentImgDiv.innerHTML = '<p style="font-size:0.75rem;color:var(--text-muted);">Belum ada foto.</p>';
+        }
+
+        new bootstrap.Modal(document.getElementById('editMenuModal')).show();
+    }
+
+    function previewEditImage(input) {
+        const preview = document.getElementById('editImagePreview');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function showQRCode() {
+        const modal = new bootstrap.Modal(document.getElementById('qrModal'));
+        const qrContainer = document.getElementById('qrcode');
+        qrContainer.innerHTML = '';
+        // Gunakan URL outlet jika is_outlet, jika tidak gunakan root
+        const menuUrl = {% if is_outlet %}`${window.location.origin}/outlet/{{ outlet_id }}`{% else %}`${window.location.origin}`{% endif %};
+        new QRCode(qrContainer, { text: menuUrl, width: 200, height: 200, correctLevel: QRCode.CorrectLevel.H });
+        document.getElementById('qrUrlText').innerText = menuUrl;
+        modal.show();
+    }
+
+    function previewImage(input) {
+        const preview = document.getElementById('imagePreview');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function filterTable() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('#menuTable tbody tr').forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+    }
+
+    // ── STOCK MANAGEMENT ──
+    let _currentStockItemId = null;
+
+    function openStockModal(id, name, stock, stockAlert) {
+        _currentStockItemId = id;
+        document.getElementById('stockItemName').textContent = name;
+        document.getElementById('stockValue').value = stock;
+        document.getElementById('stockAlert').value = stockAlert;
+        new bootstrap.Modal(document.getElementById('stockModal')).show();
+    }
+
+    function saveStock() {
+        if (!_currentStockItemId) return;
+        const stock = parseInt(document.getElementById('stockValue').value);
+        const stockAlert = parseInt(document.getElementById('stockAlert').value) || 5;
+
+        fetch(`${API_BASE}/api/menu/stock/${_currentStockItemId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ stock, stock_alert: stockAlert })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                // Update cell display
+                const cell = document.getElementById(`stock-cell-${_currentStockItemId}`);
+                if (cell) {
+                    let html = '';
+                    if (stock === -1) {
+                        html = '<span class="stock-inf">∞</span>';
+                    } else if (stock === 0) {
+                        html = '<span class="stock-out">0</span>';
+                    } else if (stock <= stockAlert) {
+                        html = `<span class="stock-low">${stock}</span>`;
+                    } else {
+                        html = `<span class="stock-ok">${stock}</span>`;
+                    }
+                    cell.innerHTML = html;
+                }
+                bootstrap.Modal.getInstance(document.getElementById('stockModal')).hide();
+                showToast('Stok berhasil diperbarui');
+            } else {
+                showToast(data.message || 'Gagal update stok', 'error');
+            }
+        })
+        .catch(() => showToast('Gagal update stok', 'error'));
+    }
+</script>
+</body>
+</html>
+
+

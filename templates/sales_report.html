@@ -1,0 +1,575 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Penjualan &mdash; {{ restaurant_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4A1D6E;
+            --primary-light: #6B2FA0;
+            --primary-dark: #2D1142;
+            --accent: #F0A500;
+            --sidebar-width: 240px;
+            --bg: #F5F6FA;
+            --card-bg: #FFFFFF;
+            --text: #1A1D23;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+            --success: #10B981;
+            --danger: #EF4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.875rem;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* â"€â"€ SIDEBAR â"€â"€ */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--primary-dark);
+            min-height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+        .sidebar-brand { padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .sidebar-brand .brand-logo { font-size: 1.1rem; font-weight: 700; color: #fff; }
+        .sidebar-brand .brand-sub { font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-top: 2px; }
+        .sidebar-nav { padding: 16px 0; flex: 1; overflow-y: auto; }
+        .nav-section-title {
+            font-size: 0.65rem; font-weight: 600; color: rgba(255,255,255,0.3);
+            text-transform: uppercase; letter-spacing: 1px; padding: 8px 20px 4px;
+        }
+        .nav-item-link {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 20px; color: rgba(255,255,255,0.65);
+            text-decoration: none; font-size: 0.85rem; font-weight: 500;
+            transition: all 0.2s; border-left: 3px solid transparent;
+        }
+        .nav-item-link:hover, .nav-item-link.active {
+            color: #fff; background: rgba(255,255,255,0.07); border-left-color: var(--accent);
+        }
+        .nav-item-link i { width: 18px; text-align: center; font-size: 0.9rem; }
+        .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.7rem; color: rgba(255,255,255,0.3); }
+
+        /* â"€â"€ MAIN â"€â"€ */
+        .main-content { margin-left: var(--sidebar-width); flex: 1; display: flex; flex-direction: column; }
+        .topbar {
+            background: var(--card-bg); border-bottom: 1px solid var(--border);
+            padding: 0 28px; height: 60px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 50;
+        }
+        .topbar-title { font-size: 1rem; font-weight: 600; }
+        .topbar-actions { display: flex; gap: 8px; align-items: center; }
+        .page-body { padding: 24px 28px; }
+
+        /* â"€â"€ BUTTONS â"€â"€ */
+        .btn-primary-custom {
+            background: var(--primary); color: #fff; border: none;
+            padding: 8px 16px; border-radius: 8px; font-size: 0.82rem; font-weight: 600;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+            transition: background 0.2s; text-decoration: none;
+        }
+        .btn-primary-custom:hover { background: var(--primary-light); color: #fff; }
+        .btn-outline-custom {
+            background: transparent; color: var(--text-muted); border: 1px solid var(--border);
+            padding: 8px 14px; border-radius: 8px; font-size: 0.82rem; font-weight: 500;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+            transition: all 0.2s; text-decoration: none;
+        }
+        .btn-outline-custom:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-success-custom {
+            background: var(--success); color: #fff; border: none;
+            padding: 8px 16px; border-radius: 8px; font-size: 0.82rem; font-weight: 600;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+            transition: background 0.2s;
+        }
+        .btn-success-custom:hover { background: #059669; }
+
+        /* â"€â"€ DATE FILTER â"€â"€ */
+        .filter-bar {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 12px; padding: 16px 20px;
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+        .filter-bar label { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+        .filter-bar input[type=date] {
+            border: 1px solid var(--border); border-radius: 8px;
+            padding: 7px 12px; font-size: 0.82rem; font-family: 'Inter', sans-serif;
+            color: var(--text); outline: none; transition: border-color 0.2s;
+        }
+        .filter-bar input[type=date]:focus { border-color: var(--primary); }
+
+        /* â"€â"€ SUMMARY CARDS â"€â"€ */
+        .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .summary-card {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 12px; padding: 18px 20px;
+        }
+        .summary-card.highlight { background: var(--primary); border-color: var(--primary); }
+        .summary-card .s-label { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .summary-card.highlight .s-label { color: rgba(255,255,255,0.7); }
+        .summary-card .s-value { font-size: 1.25rem; font-weight: 700; color: var(--text); margin-top: 4px; }
+        .summary-card.highlight .s-value { color: #fff; }
+        .summary-card .s-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+        .summary-card.highlight .s-sub { color: rgba(255,255,255,0.6); }
+
+        /* â"€â"€ TABLE CARD â"€â"€ */
+        .table-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+        .table-card-header {
+            padding: 14px 20px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            background: #FAFAFA;
+        }
+        .table-card-header .cat-name { font-size: 0.85rem; font-weight: 600; color: var(--primary); }
+        .table-card-header .cat-badge {
+            background: rgba(74,29,110,0.1); color: var(--primary);
+            font-size: 0.7rem; font-weight: 600; padding: 3px 10px; border-radius: 20px;
+        }
+        .table { margin: 0; font-size: 0.82rem; }
+        .table thead th {
+            background: #F9FAFB; border-bottom: 1px solid var(--border);
+            color: var(--text-muted); font-weight: 600; font-size: 0.72rem;
+            text-transform: uppercase; letter-spacing: 0.5px; padding: 9px 16px;
+        }
+        .table tbody td { padding: 10px 16px; border-bottom: 1px solid #F3F4F6; vertical-align: middle; }
+        .table tbody tr:last-child td { border-bottom: none; }
+        .table tfoot td { padding: 10px 16px; font-weight: 600; background: #F9FAFB; border-top: 2px solid var(--border); }
+
+        /* â"€â"€ GRAND SUMMARY TABLE â"€â"€ */
+        .grand-summary {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 12px; overflow: hidden; margin-top: 24px;
+        }
+        .grand-summary-header {
+            background: var(--primary-dark); color: #fff;
+            padding: 14px 20px; font-size: 0.88rem; font-weight: 600;
+        }
+        .grand-summary table { width: 100%; border-collapse: collapse; }
+        .grand-summary td { padding: 11px 20px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+        .grand-summary tr:last-child td { border-bottom: none; }
+        .grand-summary .row-subtotal td { background: #FAFAFA; }
+        .grand-summary .row-total td {
+            background: var(--primary); color: #fff;
+            font-size: 0.95rem; font-weight: 700;
+        }
+        .grand-summary .row-total td:last-child { text-align: right; }
+        .grand-summary td:last-child { text-align: right; font-weight: 600; }
+        .grand-summary td:first-child { color: var(--text-muted); }
+        .grand-summary .row-total td:first-child { color: rgba(255,255,255,0.85); }
+
+        /* â"€â"€ EMPTY STATE â"€â"€ */
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .empty-state i { font-size: 3rem; margin-bottom: 16px; opacity: 0.2; display: block; }
+
+        /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+           PRINT STYLES &mdash; STANDAR AKUNTANSI
+        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+        @media print {
+            @page { size: A4 portrait; margin: 1.8cm 1.5cm; }
+
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+            body {
+                background: #fff !important;
+                font-family: 'Times New Roman', serif !important;
+                font-size: 10pt !important;
+                color: #000 !important;
+                display: block !important;
+            }
+
+            /* Sembunyikan elemen non-print */
+            .sidebar, .topbar, .filter-bar, .no-print,
+            .btn-primary-custom, .btn-outline-custom, .btn-success-custom { display: none !important; }
+
+            .main-content { margin-left: 0 !important; }
+            .page-body { padding: 0 !important; }
+
+            /* â"€â"€ KOP SURAT â"€â"€ */
+            .print-header {
+                display: block !important;
+                text-align: center;
+                border-bottom: 3px double #000;
+                padding-bottom: 10pt;
+                margin-bottom: 12pt;
+            }
+            .print-header .company-name {
+                font-size: 14pt; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
+            }
+            .print-header .company-sub {
+                font-size: 10pt; margin-top: 2pt;
+            }
+            .print-header .report-title {
+                font-size: 12pt; font-weight: bold; margin-top: 8pt; text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            .print-header .report-date {
+                font-size: 10pt; margin-top: 3pt;
+            }
+            .print-header .report-no {
+                font-size: 9pt; color: #555; margin-top: 2pt;
+            }
+
+            /* â"€â"€ SUMMARY CARDS â†' tabel ringkasan â"€â"€ */
+            .summary-grid { display: none !important; }
+
+            /* â"€â"€ TABLE CARD â"€â"€ */
+            .table-card {
+                border: none !important; border-radius: 0 !important;
+                box-shadow: none !important; margin-bottom: 10pt !important;
+                page-break-inside: avoid;
+            }
+            .table-card-header {
+                background: #EFEFEF !important;
+                border: 1px solid #000 !important;
+                border-bottom: none !important;
+                padding: 4pt 6pt !important;
+            }
+            .table-card-header .cat-name { font-size: 10pt !important; color: #000 !important; font-weight: bold !important; }
+            .table-card-header .cat-badge { display: none !important; }
+
+            .table { border-collapse: collapse !important; width: 100% !important; font-size: 9.5pt !important; }
+            .table thead th {
+                background: #F5F5F5 !important; border: 1px solid #000 !important;
+                padding: 4pt 6pt !important; font-size: 9pt !important;
+                color: #000 !important; text-align: center !important;
+            }
+            .table tbody td {
+                border: 1px solid #000 !important; padding: 3pt 6pt !important;
+                color: #000 !important;
+            }
+            .table tfoot td {
+                border: 1px solid #000 !important; padding: 4pt 6pt !important;
+                background: #EFEFEF !important; font-weight: bold !important;
+            }
+
+            /* â"€â"€ GRAND SUMMARY â"€â"€ */
+            .grand-summary {
+                border: 2px solid #000 !important; border-radius: 0 !important;
+                margin-top: 14pt !important; page-break-inside: avoid;
+            }
+            .grand-summary-header {
+                background: #2D1142 !important; color: #fff !important;
+                padding: 5pt 8pt !important; font-size: 10pt !important;
+            }
+            .grand-summary table { border-collapse: collapse !important; }
+            .grand-summary td {
+                border: 1px solid #ccc !important; padding: 4pt 8pt !important;
+                font-size: 10pt !important; color: #000 !important;
+            }
+            .grand-summary .row-subtotal td { background: #F5F5F5 !important; }
+            .grand-summary .row-total td {
+                background: #2D1142 !important; color: #fff !important;
+                font-size: 11pt !important; font-weight: bold !important;
+                border-color: #2D1142 !important;
+            }
+            .grand-summary td:first-child { color: #333 !important; }
+            .grand-summary .row-total td:first-child { color: rgba(255,255,255,0.85) !important; }
+
+            /* â"€â"€ TANDA TANGAN â"€â"€ */
+            .print-signature {
+                display: block !important;
+                margin-top: 30pt;
+                page-break-inside: avoid;
+            }
+            .print-signature table { width: 100%; border-collapse: collapse; }
+            .print-signature td { width: 33%; text-align: center; padding: 0 10pt; font-size: 9.5pt; vertical-align: top; }
+            .print-signature .sig-line {
+                border-bottom: 1px solid #000;
+                margin: 40pt auto 4pt;
+                width: 80%;
+            }
+            .print-signature .sig-title { font-weight: bold; }
+            .print-signature .sig-name { font-size: 9pt; color: #555; }
+
+            /* â"€â"€ FOOTER PRINT â"€â"€ */
+            .print-footer-bar {
+                display: block !important;
+                position: fixed; bottom: 0; left: 0; width: 100%;
+                border-top: 1px solid #ccc;
+                padding-top: 4pt;
+                font-size: 8pt; color: #666;
+                text-align: center;
+                background: #fff;
+            }
+        }
+
+        /* Sembunyikan elemen khusus print di layar */
+        .print-header, .print-signature, .print-footer-bar { display: none; }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR — hanya tampil untuk admin, bukan owner -->
+{% if user_role != 'owner' %}
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">{{ restaurant_name if restaurant_name else 'Restaurant' }}</div>
+        <div class="brand-sub">Restaurant Management</div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Menu</div>
+        {% if user_role == 'admin' %}
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/dashboard{% else %}/dashboard{% endif %}" class="nav-item-link">
+            <i class="fas fa-utensils"></i> Manajemen Menu
+        </a>
+        {% endif %}
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/sales-report{% else %}/sales-report{% endif %}" class="nav-item-link active">
+            <i class="fas fa-chart-bar"></i> Laporan Penjualan
+        </a>
+        {% if user_role == 'admin' %}
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/orders{% else %}/orders{% endif %}" class="nav-item-link">
+            <i class="fas fa-receipt"></i> Manajemen Pesanan
+        </a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/couriers{% else %}/couriers{% endif %}" class="nav-item-link">
+            <i class="fas fa-motorcycle"></i> Manajemen Kurir
+        </a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/vouchers{% else %}/vouchers{% endif %}" class="nav-item-link">
+            <i class="fas fa-ticket-alt"></i> Voucher & Promo
+        </a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/customers{% else %}/customers{% endif %}" class="nav-item-link">
+            <i class="fas fa-users"></i> Riwayat Pelanggan
+        </a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/settings{% else %}/settings{% endif %}" class="nav-item-link">
+            <i class="fas fa-cog"></i> Pengaturan
+        </a>
+        <div class="nav-section-title" style="margin-top:12px;">Akses</div>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}{% else %}/{% endif %}" target="_blank" class="nav-item-link">
+            <i class="fas fa-external-link-alt"></i> Lihat Menu Tamu
+        </a>
+        {% endif %}
+    </nav>
+    <div class="sidebar-footer">
+        <div style="margin-bottom:6px;color:rgba(255,255,255,0.5);font-size:0.72rem;">
+            <i class="fas fa-user-circle" style="margin-right:4px;"></i>
+            {{ username }}
+            <span style="background:{% if user_role == 'admin' %}rgba(240,165,0,0.2);color:#F0A500{% else %}rgba(59,130,246,0.2);color:#93C5FD{% endif %};padding:1px 6px;border-radius:10px;font-size:0.65rem;margin-left:4px;">
+                {{ user_role }}
+            </span>
+        </div>
+        SGO v2.1 &copy; {{ current_year }}
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/logout{% else %}/logout{% endif %}" style="display:block;margin-top:8px;color:rgba(255,255,255,0.4);font-size:0.7rem;text-decoration:none;"
+           onmouseover="this.style.color='#EF4444'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
+            <i class="fas fa-sign-out-alt"></i> Keluar
+        </a>
+    </div>
+</aside>
+{% endif %}
+
+<!-- MAIN CONTENT -->
+<div class="main-content" style="{% if user_role == 'owner' %}margin-left:0{% endif %}">
+
+    <!-- Topbar -->
+    <div class="topbar">
+        <span class="topbar-title">Laporan Penjualan Harian</span>
+        <div class="topbar-actions no-print">
+            <button class="btn-success-custom" onclick="window.print()">
+                <i class="fas fa-print"></i> Cetak Laporan
+            </button>
+            <a href="{% if user_role == 'owner' %}/owner/dashboard{% elif is_outlet %}/outlet/{{ outlet_id }}/dashboard{% else %}/dashboard{% endif %}" class="btn-outline-custom">
+                <i class="fas fa-arrow-left"></i> {% if user_role == 'owner' %}Owner Dashboard{% else %}Dashboard{% endif %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Page Body -->
+    <div class="page-body">
+
+        <!-- Filter Bar -->
+        <div class="filter-bar no-print">
+            <label><i class="fas fa-calendar-alt me-1"></i> Tanggal:</label>
+            <input type="date" id="dateInput" value="{{ selected_date }}">
+            <button class="btn-primary-custom" onclick="goToDate()">
+                <i class="fas fa-search"></i> Tampilkan
+            </button>
+            <a href="{% if user_role == 'owner' %}{{ request.url.path }}{% elif is_outlet %}/outlet/{{ outlet_id }}/sales-report{% else %}/sales-report{% endif %}" class="btn-outline-custom">Hari Ini</a>
+        </div>
+
+        <!-- â"€â"€ KOP SURAT (hanya muncul saat print) â"€â"€ -->
+        <div class="print-header">
+            <div class="company-name">{{ restaurant_name }}</div>
+            <div class="company-sub">F&amp;B Department &mdash; Restaurant</div>
+            <div class="report-title">Laporan Penjualan Harian</div>
+            <div class="report-date">Tanggal: {{ date }}</div>
+            <div class="report-no">Dicetak pada: <span id="printTime"></span></div>
+        </div>
+
+        {% if sales %}
+
+        <!-- Summary Cards (layar) -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="s-label">Subtotal Penjualan</div>
+                <div class="s-value">Rp {{ "{:,.0f}".format(total_sales).replace(',', '.') }}</div>
+                <div class="s-sub">Sebelum pajak & service</div>
+            </div>
+            <div class="summary-card">
+                <div class="s-label">Service Charge (10%)</div>
+                <div class="s-value">Rp {{ "{:,.0f}".format(total_service).replace(',', '.') }}</div>
+                <div class="s-sub">Biaya layanan</div>
+            </div>
+            <div class="summary-card">
+                <div class="s-label">PBJT (11%)</div>
+                <div class="s-value">Rp {{ "{:,.0f}".format(total_tax).replace(',', '.') }}</div>
+                <div class="s-sub">Pajak bangunan 1</div>
+            </div>
+            <div class="summary-card highlight">
+                <div class="s-label">Grand Total</div>
+                <div class="s-value">Rp {{ "{:,.0f}".format(total_revenue).replace(',', '.') }}</div>
+                <div class="s-sub">Total pendapatan bersih</div>
+            </div>
+        </div>
+
+        <!-- Detail per Kategori -->
+        {% for category, items in sales.items() %}
+        {% set cat_total = items | sum(attribute='total') %}
+        <div class="table-card">
+            <div class="table-card-header">
+                <span class="cat-name"><i class="fas fa-tag me-2"></i>{{ category }}</span>
+                <span class="cat-badge">{{ items|length }} item</span>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width:40px" class="text-center">No.</th>
+                        <th>Nama Menu</th>
+                        <th class="text-center" style="width:100px">Qty</th>
+                        <th class="text-end" style="width:140px">Harga Satuan</th>
+                        <th class="text-end" style="width:150px">Jumlah (Rp)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td class="text-center text-muted">{{ loop.index }}</td>
+                        <td>{{ item.name }}</td>
+                        <td class="text-center">{{ item.qty }}</td>
+                        <td class="text-end">{{ "{:,.0f}".format(item.price).replace(',', '.') }}</td>
+                        <td class="text-end fw-600" style="font-weight:600">{{ "{:,.0f}".format(item.total).replace(',', '.') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-end">Subtotal {{ category }}</td>
+                        <td class="text-end">{{ "{:,.0f}".format(cat_total).replace(',', '.') }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        {% endfor %}
+
+        <!-- Grand Summary -->
+        <div class="grand-summary">
+            <div class="grand-summary-header">
+                <i class="fas fa-calculator me-2"></i>Rekapitulasi Penjualan &mdash; {{ date }}
+            </div>
+            <table>
+                <tr class="row-subtotal">
+                    <td style="width:60%">Subtotal Penjualan (sebelum pajak)</td>
+                    <td>Rp {{ "{:,.0f}".format(total_sales).replace(',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td>Service Charge &nbsp;<span style="font-size:0.78rem;color:var(--text-muted)">(10% Ã&mdash; subtotal)</span></td>
+                    <td>Rp {{ "{:,.0f}".format(total_service).replace(',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td>PBJT Restoran &nbsp;<span style="font-size:0.78rem;color:var(--text-muted)">(11% Ã&mdash; subtotal)</span></td>
+                    <td>Rp {{ "{:,.0f}".format(total_tax).replace(',', '.') }}</td>
+                </tr>
+                <tr class="row-total">
+                    <td><i class="fas fa-equals me-2"></i>GRAND TOTAL PENDAPATAN</td>
+                    <td>Rp {{ "{:,.0f}".format(total_revenue).replace(',', '.') }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Tanda Tangan (hanya print) -->
+        <div class="print-signature">
+            <table>
+                <tr>
+                    <td>
+                        <div class="sig-title">Dibuat Oleh</div>
+                        <div class="sig-line"></div>
+                        <div class="sig-name">( _________________________ )</div>
+                        <div style="font-size:8.5pt;margin-top:2pt">Kasir / Operator</div>
+                    </td>
+                    <td>
+                        <div class="sig-title">Diperiksa Oleh</div>
+                        <div class="sig-line"></div>
+                        <div class="sig-name">( _________________________ )</div>
+                        <div style="font-size:8.5pt;margin-top:2pt">Supervisor F&amp;B</div>
+                    </td>
+                    <td>
+                        <div class="sig-title">Disetujui Oleh</div>
+                        <div class="sig-line"></div>
+                        <div class="sig-name">( _________________________ )</div>
+                        <div style="font-size:8.5pt;margin-top:2pt">F&amp;B Manager</div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-chart-bar"></i>
+            <h5 style="font-weight:600;margin-bottom:8px">Tidak ada data penjualan</h5>
+            <p>Belum ada pesanan masuk pada tanggal <strong>{{ date }}</strong>.</p>
+        </div>
+        {% endif %}
+
+    </div><!-- /page-body -->
+</div><!-- /main-content -->
+
+<!-- Footer Print -->
+<div class="print-footer-bar">
+    {{ restaurant_name }} &nbsp;|&nbsp; F&amp;B Department &nbsp;|&nbsp;
+    Dokumen ini dicetak secara otomatis oleh sistem SGO v2.1 &nbsp;|&nbsp; &copy; {{ current_year }}
+</div>
+
+<script>
+    const _isOutlet = {{ 'true' if is_outlet else 'false' }};
+    const _outletId = {{ outlet_id if outlet_id else 'null' }};
+    const _apiBase    = _isOutlet ? `/outlet/${_outletId}` : '';
+    const _userRole   = "{{ user_role }}";
+    const _reportPath = window.location.pathname; // untuk owner: /owner/print-report/main atau /owner/print-report/1
+
+    function goToDate() {
+        const d = document.getElementById('dateInput').value;
+        if (!d) return;
+        if (_userRole === 'owner') {
+            window.location.href = `${_reportPath}?date=${d}`;
+        } else {
+            window.location.href = `${_apiBase}/sales-report?date=${d}`;
+        }
+    }
+    document.getElementById('dateInput').addEventListener('keydown', e => { if (e.key === 'Enter') goToDate(); });
+
+    // Isi waktu cetak saat print
+    window.addEventListener('beforeprint', () => {
+        const now = new Date();
+        const fmt = now.toLocaleDateString('id-ID', {weekday:'long',year:'numeric',month:'long',day:'numeric'})
+                  + ', ' + now.toLocaleTimeString('id-ID');
+        document.getElementById('printTime').textContent = fmt;
+    });
+</script>
+</body>
+</html>
+
+
+

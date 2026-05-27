@@ -1,0 +1,695 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengaturan &mdash; {{ restaurant_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4A1D6E; --primary-light: #6B2FA0; --primary-dark: #2D1142;
+            --accent: #F0A500; --sidebar-width: 240px; --bg: #F5F6FA;
+            --card-bg: #FFFFFF; --text: #1A1D23; --text-muted: #6B7280;
+            --border: #E5E7EB; --success: #10B981;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); font-size: 0.875rem; display: flex; min-height: 100vh; }
+
+        .sidebar { width: var(--sidebar-width); background: var(--primary-dark); min-height: 100vh; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-brand { padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .sidebar-brand .brand-logo { font-size: 1.1rem; font-weight: 700; color: #fff; }
+        .sidebar-brand .brand-sub { font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-top: 2px; }
+        .sidebar-nav { padding: 16px 0; flex: 1; overflow-y: auto; overflow-y: auto; }
+        .nav-section-title { font-size: 0.65rem; font-weight: 600; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1px; padding: 8px 20px 4px; }
+        .nav-item-link { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-item-link:hover, .nav-item-link.active { color: #fff; background: rgba(255,255,255,0.07); border-left-color: var(--accent); }
+        .nav-item-link i { width: 18px; text-align: center; font-size: 0.9rem; }
+        .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.7rem; color: rgba(255,255,255,0.3); }
+
+        .main-content { margin-left: var(--sidebar-width); flex: 1; display: flex; flex-direction: column; }
+        .topbar { background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+        .topbar-title { font-size: 1rem; font-weight: 600; }
+        .page-body { padding: 24px 28px; max-width: 720px; }
+
+        .settings-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+        .settings-card-header { padding: 14px 20px; border-bottom: 1px solid var(--border); background: #FAFAFA; font-size: 0.88rem; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .settings-card-body { padding: 20px; }
+
+        .form-label { font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+        .form-control { font-size: 0.83rem; border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--text); transition: border-color 0.2s; }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(74,29,110,0.1); outline: none; }
+        .form-text { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+        .input-group-text { font-size: 0.82rem; background: #F9FAFB; border-color: var(--border); color: var(--text-muted); }
+
+        .btn-save { background: var(--primary); color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; }
+        .btn-save:hover { background: var(--primary-light); }
+        .btn-outline { background: transparent; color: var(--text-muted); border: 1px solid var(--border); padding: 10px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; transition: all 0.2s; }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+        .alert-success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #065F46; border-radius: 8px; padding: 12px 16px; font-size: 0.85rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+
+        /* Map preview */
+        #mapPreview { width: 100%; height: 200px; border-radius: 8px; border: 1px solid var(--border); margin-top: 10px; display: none; }
+
+        .tarif-preview { background: #F9FAFB; border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin-top: 12px; font-size: 0.82rem; }
+        .tarif-preview .tarif-title { font-weight: 600; color: var(--primary); margin-bottom: 8px; }
+        .tarif-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px dashed var(--border); }
+        .tarif-row:last-child { border-bottom: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">{{ restaurant_name if restaurant_name else 'Restaurant' }}</div>
+        <div class="brand-sub">Restaurant Management</div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Menu</div>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/dashboard{% else %}/dashboard{% endif %}" class="nav-item-link"><i class="fas fa-utensils"></i> Manajemen Menu</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/sales-report{% else %}/sales-report{% endif %}" class="nav-item-link"><i class="fas fa-chart-bar"></i> Laporan Penjualan</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/orders{% else %}/orders{% endif %}" class="nav-item-link"><i class="fas fa-receipt"></i> Manajemen Pesanan</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/couriers{% else %}/couriers{% endif %}" class="nav-item-link"><i class="fas fa-motorcycle"></i> Manajemen Kurir</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/vouchers{% else %}/vouchers{% endif %}" class="nav-item-link"><i class="fas fa-ticket-alt"></i> Voucher & Promo</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/customers{% else %}/customers{% endif %}" class="nav-item-link"><i class="fas fa-users"></i> Riwayat Pelanggan</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/settings{% else %}/settings{% endif %}" class="nav-item-link active"><i class="fas fa-cog"></i> Pengaturan</a>
+        <div class="nav-section-title" style="margin-top:12px;">Akses</div>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}{% else %}/{% endif %}" target="_blank" class="nav-item-link"><i class="fas fa-external-link-alt"></i> Lihat Menu Tamu</a>
+    </nav>
+    <div class="sidebar-footer">        <div style="margin-bottom:6px;color:rgba(255,255,255,0.5);font-size:0.72rem;">
+            <i class="fas fa-user-circle" style="margin-right:4px;"></i>
+            {{ username }}
+            <span style="background:rgba(240,165,0,0.2);color:#F0A500;padding:1px 6px;border-radius:10px;font-size:0.65rem;margin-left:4px;">admin</span>
+        </div>
+        SGO v2.1 &copy; {{ current_year }}
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/logout{% else %}/logout{% endif %}" style="display:block;margin-top:8px;color:rgba(255,255,255,0.4);font-size:0.7rem;text-decoration:none;"
+           onmouseover="this.style.color='#EF4444'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
+            <i class="fas fa-sign-out-alt"></i> Keluar
+        </a>
+    </div>
+</aside>
+
+<div class="main-content">
+    <div class="topbar">
+        <span style="font-size:1rem;font-weight:600;">Pengaturan Sistem</span>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/dashboard{% else %}/dashboard{% endif %}" class="btn-outline"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    </div>
+
+    <div class="page-body">
+
+        {% if request.query_params.get('saved') %}
+        <div class="alert-success"><i class="fas fa-check-circle"></i> Pengaturan berhasil disimpan!</div>
+        {% endif %}
+
+        <form action="{% if is_outlet %}/outlet/{{ outlet_id }}/api/settings{% else %}/api/settings{% endif %}" method="POST">
+
+            <!-- QRIS Payment -->
+            <div class="settings-card">
+                <div class="settings-card-header"><i class="fas fa-qrcode"></i> QRIS Pembayaran</div>
+                <div class="settings-card-body">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-3 text-center">
+                            <img id="qrisPreview" src="{{ settings.qris_image }}"
+                                 style="width:140px;height:140px;object-fit:contain;border:1px solid var(--border);border-radius:8px;background:#fff;padding:4px;">
+                            <div style="font-size:0.72rem;color:var(--text-muted);margin-top:6px;">QRIS saat ini</div>
+                        </div>
+                        <div class="col-md-9">
+                            <label class="form-label">Upload QRIS Baru</label>
+                            <input type="file" id="qrisFileInput" class="form-control" accept="image/*"
+                                   onchange="previewQris(this)">
+                            <div class="form-text">Format JPG / PNG. Pastikan QR code terlihat jelas dan tidak terpotong.</div>
+                            <button type="button" onclick="uploadQris()" class="btn-save mt-3">
+                                <i class="fas fa-upload"></i> Upload QRIS
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tax & Service -->
+            <div class="settings-card">
+                <div class="settings-card-header"><i class="fas fa-percent"></i> Pajak & Service Charge</div>
+                <div class="settings-card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div style="background:#F0F9FF;border:1px solid #BAE6FD;border-radius:8px;padding:12px 16px;font-size:0.8rem;color:#0369A1;">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Pengaturan ini berlaku untuk semua kalkulasi: tampilan menu, invoice, dan laporan penjualan.
+                            </div>
+                        </div>
+                        <!-- Service Charge -->
+                        <div class="col-md-6">
+                            <div style="background:#F9FAFB;border:1px solid var(--border);border-radius:8px;padding:16px;">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                                    <label class="form-label" style="margin:0;">Service Charge</label>
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <span style="font-size:0.78rem;color:var(--text-muted);" id="serviceLabel">{{ 'Aktif' if settings.enable_service == '1' else 'Nonaktif' }}</span>
+                                        <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;">
+                                            <input type="checkbox" name="enable_service" value="1"
+                                                   {% if settings.enable_service == '1' %}checked{% endif %}
+                                                   onchange="document.getElementById('serviceLabel').textContent=this.checked?'Aktif':'Nonaktif'"
+                                                   style="opacity:0;width:0;height:0;">
+                                            <span style="position:absolute;inset:0;background:{% if settings.enable_service == '1' %}var(--success){% else %}#ccc{% endif %};border-radius:24px;transition:0.3s;"
+                                                  id="serviceToggle"></span>
+                                            <span style="position:absolute;left:2px;top:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:0.3s;transform:{% if settings.enable_service == '1' %}translateX(20px){% else %}translateX(0){% endif %};"
+                                                  id="serviceThumb"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <label class="form-label">Persentase (%)</label>
+                                <div class="input-group">
+                                    <input type="number" name="service_rate" class="form-control"
+                                           value="{{ settings.service_rate }}" min="0" max="100" step="0.5">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Pajak -->
+                        <div class="col-md-6">
+                            <div style="background:#F9FAFB;border:1px solid var(--border);border-radius:8px;padding:16px;">
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                                    <label class="form-label" style="margin:0;">Pajak</label>
+                                    <div style="display:flex;align-items:center;gap:8px;">
+                                        <span style="font-size:0.78rem;color:var(--text-muted);" id="taxLabel2">{{ 'Aktif' if settings.enable_tax == '1' else 'Nonaktif' }}</span>
+                                        <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;">
+                                            <input type="checkbox" name="enable_tax" value="1"
+                                                   {% if settings.enable_tax == '1' %}checked{% endif %}
+                                                   onchange="document.getElementById('taxLabel2').textContent=this.checked?'Aktif':'Nonaktif'"
+                                                   style="opacity:0;width:0;height:0;">
+                                            <span style="position:absolute;inset:0;background:{% if settings.enable_tax == '1' %}var(--success){% else %}#ccc{% endif %};border-radius:24px;transition:0.3s;"></span>
+                                            <span style="position:absolute;left:2px;top:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:0.3s;transform:{% if settings.enable_tax == '1' %}translateX(20px){% else %}translateX(0){% endif %};"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <label class="form-label">Label Pajak</label>
+                                <input type="text" name="tax_label" class="form-control mb-2"
+                                       value="{{ settings.tax_label }}" placeholder="PBJT">
+                                <label class="form-label">Persentase (%)</label>
+                                <div class="input-group">
+                                    <input type="number" name="tax_rate" class="form-control"
+                                           value="{{ settings.tax_rate }}" min="0" max="100" step="0.5">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Report -->
+            <div class="settings-card">
+                <div class="settings-card-header"><i class="fas fa-chart-line"></i> Ringkasan Harian Otomatis</div>
+                <div class="settings-card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div style="background:#F0FDF4;border:1px solid #86EFAC;border-radius:8px;padding:12px 16px;font-size:0.8rem;color:#166534;">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Bot akan otomatis mengirim ringkasan penjualan harian ke Telegram owner setiap hari pada jam yang ditentukan.
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div style="display:flex;align-items:center;justify-content:space-between;background:#F9FAFB;border:1px solid var(--border);border-radius:8px;padding:14px 16px;">
+                                <div>
+                                    <div style="font-weight:600;font-size:0.85rem;">Aktifkan Ringkasan Harian</div>
+                                    <div style="font-size:0.75rem;color:var(--text-muted);">Kirim laporan otomatis setiap hari</div>
+                                </div>
+                                <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;">
+                                    <input type="checkbox" name="daily_report_enabled" value="1"
+                                           {% if settings.daily_report_enabled == '1' %}checked{% endif %}
+                                           style="opacity:0;width:0;height:0;">
+                                    <span style="position:absolute;inset:0;background:{% if settings.daily_report_enabled == '1' %}var(--success){% else %}#ccc{% endif %};border-radius:24px;transition:0.3s;"></span>
+                                    <span style="position:absolute;left:2px;top:2px;width:20px;height:20px;background:#fff;border-radius:50%;transition:0.3s;transform:{% if settings.daily_report_enabled == '1' %}translateX(20px){% else %}translateX(0){% endif %};"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Jam Kirim</label>
+                            <div class="input-group">
+                                <input type="number" name="daily_report_hour" class="form-control"
+                                       value="{{ settings.daily_report_hour }}" min="0" max="23">
+                                <span class="input-group-text">:</span>
+                                <input type="number" name="daily_report_minute" class="form-control"
+                                       value="{{ settings.daily_report_minute }}" min="0" max="59">
+                                <span class="input-group-text">WIB</span>
+                            </div>
+                            <div class="form-text">Default: 22:00 WIB</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Telegram ID Owner</label>
+                            <input type="text" name="owner_telegram_id" class="form-control"
+                                   value="{{ settings.owner_telegram_id }}"
+                                   placeholder="Contoh: 784633296">
+                            <div class="form-text">Kosongkan jika sama dengan admin. Owner bisa cek ID-nya via @userinfobot</div>
+                        </div>
+                        <div class="col-12">
+                            <a href="/api/send-daily-report" target="_blank" class="btn-outline" style="font-size:0.82rem;">
+                                <i class="fas fa-paper-plane"></i> Test Kirim Sekarang
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Restaurant Info -->
+            <div class="settings-card">
+                <div class="settings-card-header"><i class="fas fa-store"></i> Informasi Restaurant</div>
+                <div class="settings-card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nama Restaurant</label>
+                        <input type="text" name="restaurant_name" class="form-control" value="{{ settings.restaurant_name }}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Koordinat -->
+            <div class="settings-card">
+                <div class="settings-card-header"><i class="fas fa-map-marker-alt"></i> Koordinat Restaurant (untuk Delivery)</div>
+                <div class="settings-card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Latitude</label>
+                            <input type="text" name="restaurant_lat" id="inputLat" class="form-control"
+                                   value="{{ settings.restaurant_lat }}" placeholder="-6.614970"
+                                   oninput="updateMapPreview()">
+                            <div class="form-text">Contoh: -6.614970215748657</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Longitude</label>
+                            <input type="text" name="restaurant_lng" id="inputLng" class="form-control"
+                                   value="{{ settings.restaurant_lng }}" placeholder="106.803858"
+                                   oninput="updateMapPreview()">
+                            <div class="form-text">Contoh: 106.80385837668723</div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button type="button" class="btn-outline" onclick="getMyLocation()">
+                            <i class="fas fa-crosshairs"></i> Gunakan Lokasi Saya Sekarang
+                        </button>
+                        <a id="mapsLink" href="#" target="_blank" class="btn-outline ms-2" style="margin-left:8px;">
+                            <i class="fas fa-map"></i> Lihat di Maps
+                        </a>
+                    </div>
+                    <iframe id="mapPreview" src="" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- Tarif Ongkir -->
+            <div class="settings-card">
+                <div class="settings-card-header"><i class="fas fa-motorcycle"></i> Tarif Ongkos Kirim</div>
+                <div class="settings-card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Biaya Minimum (Rp)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp</span>
+                                <input type="number" name="delivery_min_fee" id="minFee" class="form-control"
+                                       value="{{ settings.delivery_min_fee }}" min="0" oninput="updateTarifPreview()">
+                            </div>
+                            <div class="form-text">Biaya untuk jarak minimum</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Jarak Minimum (km)</label>
+                            <div class="input-group">
+                                <input type="number" name="delivery_min_km" id="minKm" class="form-control"
+                                       value="{{ settings.delivery_min_km }}" min="0" step="0.5" oninput="updateTarifPreview()">
+                                <span class="input-group-text">km</span>
+                            </div>
+                            <div class="form-text">Jarak yang dikenakan biaya minimum</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tarif per km (Rp)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp</span>
+                                <input type="number" name="delivery_fee_per_km" id="feePerKm" class="form-control"
+                                       value="{{ settings.delivery_fee_per_km }}" min="0" oninput="updateTarifPreview()">
+                                <span class="input-group-text">/km</span>
+                            </div>
+                            <div class="form-text">Biaya tambahan per km setelah jarak minimum</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Jarak Maksimal (km)</label>
+                            <div class="input-group">
+                                <input type="number" name="delivery_max_km" id="maxKm" class="form-control"
+                                       value="{{ settings.delivery_max_km }}" min="1" oninput="updateTarifPreview()">
+                                <span class="input-group-text">km</span>
+                            </div>
+                            <div class="form-text">Batas maksimal jangkauan pengiriman</div>
+                        </div>
+                    </div>
+
+                    <!-- Preview tarif -->
+                    <div class="tarif-preview" id="tarifPreview">
+                        <div class="tarif-title">Preview Tarif:</div>
+                        <div id="tarifRows"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:10px;">
+                <button type="submit" class="btn-save"><i class="fas fa-save"></i> Simpan Pengaturan</button>
+                <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/dashboard{% else %}/dashboard{% endif %}" class="btn-outline">Batal</a>
+            </div>
+
+        </form>
+
+        <!-- â"€â"€ GANTI PASSWORD â"€â"€ -->
+        <div class="settings-card" style="margin-top:24px;">
+            <div class="settings-card-header"><i class="fas fa-key"></i> Ganti Password Login</div>
+            <div class="settings-card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">User</label>
+                        <select id="pwUser" class="form-control">
+                            <option value="admin">admin</option>
+                            <option value="owner">owner</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Password Baru</label>
+                        <input type="password" id="pwNew" class="form-control" placeholder="Min. 6 karakter">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Konfirmasi Password</label>
+                        <input type="password" id="pwConfirm" class="form-control" placeholder="Ulangi password">
+                    </div>
+                </div>
+                <div style="margin-top:12px;display:flex;align-items:center;gap:12px;">
+                    <button onclick="doChangePassword()" class="btn-save" style="background:#3B82F6;">
+                        <i class="fas fa-key"></i> Ganti Password
+                    </button>
+                    <div id="pwResult" style="font-size:0.82rem;display:none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- â"€â"€ BACKUP & RESET â"€â"€ -->
+        <div class="settings-card" style="margin-top:24px;border:1px solid #FCA5A5;">
+            <div class="settings-card-header" style="background:rgba(239,68,68,0.08);color:#B91C1C;">
+                <i class="fas fa-database"></i> Backup & Reset Database
+            </div>
+            <div class="settings-card-body">
+
+                <!-- Backup Manual -->
+                <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);">
+                    <div style="font-size:0.85rem;font-weight:600;color:var(--text);margin-bottom:6px;">
+                        <i class="fas fa-save" style="color:var(--success)"></i> Backup Manual
+                    </div>
+                    <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:12px;">
+                        Backup otomatis berjalan setiap hari jam <b>02:00 WIB</b> dan disimpan 30 hari terakhir.
+                        Klik tombol di bawah untuk backup sekarang.
+                    </p>
+                    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                        <button onclick="doBackupNow()" class="btn-save" style="background:var(--success);">
+                            <i class="fas fa-download"></i> Backup Sekarang
+                        </button>
+                        <button onclick="loadBackupList()" class="btn-outline">
+                            <i class="fas fa-list"></i> Lihat Daftar Backup
+                        </button>
+                    </div>
+                    <div id="backupResult" style="margin-top:10px;font-size:0.82rem;display:none;"></div>
+                    <div id="backupList" style="margin-top:12px;display:none;">
+                        <div style="font-size:0.78rem;font-weight:600;color:var(--text-muted);margin-bottom:6px;">File Backup Tersedia:</div>
+                        <div id="backupListItems"></div>
+                    </div>
+                </div>
+
+                <!-- Reset Orders -->
+                <div>
+                    <div style="font-size:0.85rem;font-weight:600;color:#B91C1C;margin-bottom:6px;">
+                        <i class="fas fa-trash-alt"></i> Reset Data Pesanan
+                    </div>
+                    <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:12px;">
+                        Hapus <b>semua data pesanan, rating, dan review</b>. Menu, kurir, voucher, dan pengaturan <b>tidak</b> akan terhapus.
+                        Backup otomatis dibuat sebelum reset.
+                    </p>
+                    <div id="resetStep1">
+                        <button onclick="showResetConfirm()" style="background:rgba(239,68,68,0.1);color:#B91C1C;border:1px solid #FCA5A5;padding:8px 16px;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;">
+                            <i class="fas fa-exclamation-triangle"></i> Reset Data Pesanan
+                        </button>
+                    </div>
+                    <div id="resetStep2" style="display:none;background:#FEF2F2;border:1px solid #FCA5A5;border-radius:8px;padding:16px;">
+                        <p style="font-size:0.82rem;font-weight:600;color:#B91C1C;margin-bottom:10px;">
+                            âš ï¸ Tindakan ini tidak dapat dibatalkan! Ketik <b>RESET</b> untuk konfirmasi:
+                        </p>
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <input type="text" id="resetConfirmInput" placeholder="Ketik RESET"
+                                   style="padding:8px 12px;border:1px solid #FCA5A5;border-radius:6px;font-size:0.85rem;font-family:'Inter',sans-serif;width:160px;text-transform:uppercase;"
+                                   oninput="this.value=this.value.toUpperCase()">
+                            <button onclick="doReset()" style="background:#EF4444;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:0.82rem;font-weight:600;cursor:pointer;">
+                                <i class="fas fa-trash-alt"></i> Konfirmasi Reset
+                            </button>
+                            <button onclick="cancelReset()" style="background:transparent;border:1px solid var(--border);padding:8px 14px;border-radius:6px;font-size:0.82rem;cursor:pointer;">
+                                Batal
+                            </button>
+                        </div>
+                        <div id="resetResult" style="margin-top:10px;font-size:0.82rem;display:none;"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Toast -->
+<div style="position:fixed;bottom:24px;right:24px;z-index:9999;" id="toastContainer"></div>
+
+<script>
+    function previewQris(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => { document.getElementById('qrisPreview').src = e.target.result; };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function uploadQris() {
+        const input = document.getElementById('qrisFileInput');
+        if (!input.files || !input.files[0]) {
+            alert('Pilih file QRIS terlebih dahulu!');
+            return;
+        }
+        const formData = new FormData();
+        formData.append('image_file', input.files[0]);
+        fetch('{% if is_outlet %}/outlet/{{ outlet_id }}{% endif %}/api/settings/upload-qris', { method: 'POST', body: formData })
+        .then(r => { if (r.redirected || r.ok) { alert('✅ QRIS berhasil diupload!'); location.reload(); } })
+        .catch(() => alert('❌ Gagal upload QRIS.'));
+    }
+
+    function updateMapPreview() {
+        const lat = document.getElementById('inputLat').value;
+        const lng = document.getElementById('inputLng').value;
+        if (lat && lng) {
+            const iframe = document.getElementById('mapPreview');
+            iframe.src = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+            iframe.style.display = 'block';
+            document.getElementById('mapsLink').href = `https://www.google.com/maps?q=${lat},${lng}`;
+        }
+    }
+
+    function getMyLocation() {
+        if (!navigator.geolocation) { alert('Browser tidak mendukung GPS.'); return; }
+        navigator.geolocation.getCurrentPosition(pos => {
+            document.getElementById('inputLat').value = pos.coords.latitude.toFixed(10);
+            document.getElementById('inputLng').value = pos.coords.longitude.toFixed(10);
+            updateMapPreview();
+        }, () => alert('Gagal mendapatkan lokasi.'));
+    }
+
+    function updateTarifPreview() {
+        const minFee   = parseInt(document.getElementById('minFee').value) || 0;
+        const minKm    = parseFloat(document.getElementById('minKm').value) || 1;
+        const feePerKm = parseInt(document.getElementById('feePerKm').value) || 0;
+        const maxKm    = parseInt(document.getElementById('maxKm').value) || 10;
+
+        const samples = [minKm, 2, 3, 5, maxKm].filter((v, i, a) => v <= maxKm && a.indexOf(v) === i).sort((a,b)=>a-b);
+        let html = '';
+        samples.forEach(km => {
+            const fee = km <= minKm ? minFee : minFee + Math.round((km - minKm) * feePerKm);
+            html += `<div class="tarif-row"><span>${km} km</span><span>Rp ${fee.toLocaleString('id-ID')}</span></div>`;
+        });
+        document.getElementById('tarifRows').innerHTML = html;
+    }
+
+    // Init
+    updateMapPreview();
+    updateTarifPreview();
+
+    // â"€â"€ BACKUP & RESET FUNCTIONS â"€â"€
+    function showToast(msg, type='success') {
+        const el = document.createElement('div');
+        el.style.cssText = `background:${type==='success'?'#1A1D23':'#EF4444'};color:#fff;padding:12px 18px;border-radius:10px;font-size:0.83rem;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,0.2);margin-top:8px;animation:slideUp 0.3s ease;`;
+        el.innerHTML = `<span>${type==='success'?'✅':'❌'}</span><span>${msg}</span>`;
+        document.getElementById('toastContainer').appendChild(el);
+        setTimeout(() => el.remove(), 4000);
+    }
+
+    function doBackupNow() {
+        const btn = event.target;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Membackup...';
+        const resultDiv = document.getElementById('backupResult');
+        resultDiv.style.display = 'none';
+
+        fetch('/api/backup-now')
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                resultDiv.style.cssText = 'display:block;color:#065F46;background:#D1FAE5;padding:10px 14px;border-radius:8px;margin-top:10px;';
+                resultDiv.innerHTML = `✅ Backup berhasil! File: <b>${data.file}</b> (${data.size_kb} KB)`;
+                showToast('Backup database berhasil!');
+            } else {
+                resultDiv.style.cssText = 'display:block;color:#B91C1C;background:#FEF2F2;padding:10px 14px;border-radius:8px;margin-top:10px;';
+                resultDiv.innerHTML = `❌ Backup gagal: ${data.message}`;
+            }
+        })
+        .catch(() => {
+            resultDiv.style.cssText = 'display:block;color:#B91C1C;';
+            resultDiv.innerHTML = '❌ Gagal menghubungi server.';
+            resultDiv.style.display = 'block';
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-download"></i> Backup Sekarang';
+        });
+    }
+
+    function loadBackupList() {
+        const listDiv = document.getElementById('backupList');
+        const itemsDiv = document.getElementById('backupListItems');
+        listDiv.style.display = 'block';
+        itemsDiv.innerHTML = '<span style="color:var(--text-muted);font-size:0.78rem;">Memuat...</span>';
+
+        fetch('/api/backup-list')
+        .then(r => r.json())
+        .then(data => {
+            if (!data.backups || data.backups.length === 0) {
+                itemsDiv.innerHTML = '<span style="color:var(--text-muted);font-size:0.78rem;">Belum ada backup.</span>';
+                return;
+            }
+            itemsDiv.innerHTML = data.backups.map(b => `
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:#F9FAFB;border-radius:6px;margin-bottom:4px;font-size:0.78rem;">
+                    <span><i class="fas fa-database" style="color:var(--success);margin-right:6px;"></i>${b.name}</span>
+                    <span style="color:var(--text-muted);">${b.size_kb} KB</span>
+                </div>
+            `).join('');
+        })
+        .catch(() => {
+            itemsDiv.innerHTML = '<span style="color:var(--danger);font-size:0.78rem;">Gagal memuat daftar backup.</span>';
+        });
+    }
+
+    function showResetConfirm() {
+        document.getElementById('resetStep1').style.display = 'none';
+        document.getElementById('resetStep2').style.display = 'block';
+        document.getElementById('resetConfirmInput').focus();
+    }
+
+    function cancelReset() {
+        document.getElementById('resetStep1').style.display = 'block';
+        document.getElementById('resetStep2').style.display = 'none';
+        document.getElementById('resetConfirmInput').value = '';
+        document.getElementById('resetResult').style.display = 'none';
+    }
+
+    function doChangePassword() {
+        const username = document.getElementById('pwUser').value;
+        const newPw    = document.getElementById('pwNew').value.trim();
+        const confirm  = document.getElementById('pwConfirm').value.trim();
+        const resultDiv = document.getElementById('pwResult');
+
+        if (!newPw || !confirm) {
+            resultDiv.style.cssText = 'display:block;color:#B91C1C;';
+            resultDiv.textContent = '❌ Semua field wajib diisi.';
+            return;
+        }
+        if (newPw.length < 6) {
+            resultDiv.style.cssText = 'display:block;color:#B91C1C;';
+            resultDiv.textContent = '❌ Password minimal 6 karakter.';
+            return;
+        }
+        if (newPw !== confirm) {
+            resultDiv.style.cssText = 'display:block;color:#B91C1C;';
+            resultDiv.textContent = '❌ Konfirmasi password tidak cocok.';
+            return;
+        }
+
+        resultDiv.style.cssText = 'display:block;color:var(--text-muted);';
+        resultDiv.textContent = 'Menyimpan...';
+
+        fetch('/api/change-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, new_password: newPw })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                resultDiv.style.cssText = 'display:block;color:#065F46;';
+                resultDiv.textContent = `✅ ${data.message}`;
+                document.getElementById('pwNew').value = '';
+                document.getElementById('pwConfirm').value = '';
+                showToast(`Password ${username} berhasil diubah!`);
+            } else {
+                resultDiv.style.cssText = 'display:block;color:#B91C1C;';
+                resultDiv.textContent = `❌ ${data.message}`;
+            }
+        })
+        .catch(() => {
+            resultDiv.style.cssText = 'display:block;color:#B91C1C;';
+            resultDiv.textContent = '❌ Gagal menghubungi server.';
+        });
+    }
+
+    function doReset() {
+        const val = document.getElementById('resetConfirmInput').value.trim();
+        const resultDiv = document.getElementById('resetResult');
+        if (val !== 'RESET') {
+            resultDiv.style.cssText = 'display:block;color:#B91C1C;font-weight:600;';
+            resultDiv.textContent = '❌ Ketik RESET (huruf kapital) untuk konfirmasi.';
+            return;
+        }
+
+        const btn = event.target;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mereset...';
+        resultDiv.style.display = 'none';
+
+        fetch('/api/reset-orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ confirm: 'RESET' })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                resultDiv.style.cssText = 'display:block;color:#065F46;background:#D1FAE5;padding:10px 14px;border-radius:8px;';
+                resultDiv.innerHTML = `✅ Reset berhasil! Backup tersimpan: <b>${data.backup_file}</b>`;
+                showToast('Data pesanan berhasil direset!');
+                setTimeout(() => cancelReset(), 3000);
+            } else {
+                resultDiv.style.cssText = 'display:block;color:#B91C1C;background:#FEF2F2;padding:10px 14px;border-radius:8px;';
+                resultDiv.innerHTML = `❌ Gagal: ${data.message}`;
+            }
+        })
+        .catch(() => {
+            resultDiv.style.cssText = 'display:block;color:#B91C1C;';
+            resultDiv.textContent = '❌ Gagal menghubungi server.';
+            resultDiv.style.display = 'block';
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-trash-alt"></i> Konfirmasi Reset';
+        });
+    }
+</script>
+</body>
+</html>
+
+
+
+
+

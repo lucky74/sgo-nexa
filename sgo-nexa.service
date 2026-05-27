@@ -1,0 +1,13 @@
+[Unit]
+Description=SGO Nexa Telegram Bot & Web App
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/opt/sgo-nexa
+ExecStart=/opt/sgo-nexa/venv/bin/python main.py
+Restart=always
+EnvironmentFile=/opt/sgo-nexa/.env
+
+[Install]
+WantedBy=multi-user.target

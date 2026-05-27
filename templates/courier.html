@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konfirmasi Pengiriman &mdash; {{ restaurant_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0f0f1a;
+            color: #eee;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 32px 28px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        .brand {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .brand h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #D4AF37;
+            letter-spacing: 1px;
+        }
+        .brand p {
+            font-size: 0.78rem;
+            color: #888;
+            margin-top: 4px;
+        }
+        .section-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .info-box {
+            background: #252540;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .info-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.88rem;
+        }
+        .info-row:last-child { margin-bottom: 0; }
+        .info-row .label { color: #888; min-width: 80px; }
+        .info-row .value { color: #eee; font-weight: 500; flex: 1; }
+        .items-list {
+            background: #252540;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            padding: 5px 0;
+            border-bottom: 1px solid #333;
+        }
+        .item-row:last-child { border-bottom: none; }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #D4AF37;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #444;
+        }
+        .maps-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 13px;
+            background: #1a3a2a;
+            border: 1px solid #2d6a4f;
+            border-radius: 12px;
+            color: #52b788;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 12px;
+            transition: background 0.2s;
+        }
+        .maps-btn:hover { background: #1f4a35; }
+        .confirm-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #10B981, #059669);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: opacity 0.2s;
+            font-family: 'Poppins', sans-serif;
+        }
+        .confirm-btn:hover { opacity: 0.9; }
+        .confirm-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .success-state {
+            text-align: center;
+            padding: 20px 0;
+            display: none;
+        }
+        .success-state .icon { font-size: 4rem; margin-bottom: 16px; }
+        .success-state h3 { font-size: 1.2rem; font-weight: 700; color: #10B981; margin-bottom: 8px; }
+        .success-state p { font-size: 0.85rem; color: #888; }
+        .already-done {
+            text-align: center;
+            padding: 20px 0;
+            color: #888;
+        }
+        .already-done .icon { font-size: 3rem; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="brand">
+        <h2>{{ restaurant_name }}</h2>
+        <p>Konfirmasi Pengiriman Pesanan</p>
+    </div>
+
+    {% if order.status == 'completed' %}
+    <div class="already-done">
+        <div class="icon">✅</div>
+        <h3 style="color:#10B981;font-size:1.1rem;margin-bottom:8px;">Sudah Dikonfirmasi</h3>
+        <p>Pesanan #{{ order.id }} sudah dikonfirmasi sebelumnya.</p>
+    </div>
+    {% else %}
+
+    <div id="mainContent">
+        <div class="section-title">Info Pengiriman</div>
+        <div class="info-box">
+            <div class="info-row">
+                <span class="label">Pesanan #</span>
+                <span class="value">{{ order.id }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Pembeli</span>
+                <span class="value">{{ order.customer_name or '&mdash;' }}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">WhatsApp</span>
+                <span class="value">
+                    {% if order.whatsapp %}
+                    <a href="https://wa.me/{{ order.whatsapp|replace('0', '62', 1) }}" style="color:#52b788;">{{ order.whatsapp }}</a>
+                    {% else %}&mdash;{% endif %}
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="label">Alamat</span>
+                <span class="value">{{ order.delivery_address or '&mdash;' }}</span>
+            </div>
+            {% if order.delivery_distance %}
+            <div class="info-row">
+                <span class="label">Jarak</span>
+                <span class="value">{{ "%.1f"|format(order.delivery_distance) }} km</span>
+            </div>
+            {% endif %}
+            <div class="info-row">
+                <span class="label">Kurir</span>
+                <span class="value" style="color:#D4AF37;">{{ order.courier_name or '&mdash;' }}</span>
+            </div>
+        </div>
+
+        <div class="section-title">Detail Pesanan</div>
+        <div class="items-list" id="itemsList">
+            <div style="font-size:0.82rem;color:#888;text-align:center;">Memuat...</div>
+        </div>
+
+        {% if order.delivery_lat and order.delivery_lng %}
+        <a class="maps-btn" href="https://www.google.com/maps/dir/{{ restaurant_lat }},{{ restaurant_lng }}/{{ order.delivery_lat }},{{ order.delivery_lng }}" target="_blank">
+            <i class="fas fa-map-marker-alt"></i> Navigasi ke Lokasi GPS Pembeli
+        </a>
+        {% endif %}
+        {% if order.delivery_address %}
+        <a class="maps-btn" href="https://www.google.com/maps/dir/{{ restaurant_lat }},{{ restaurant_lng }}/{{ order.delivery_address | urlencode }}" target="_blank" style="background:#1a2a3a;border-color:#2d4a6f;color:#52a8e8;">
+            <i class="fas fa-search-location"></i> Navigasi via Alamat Teks
+        </a>
+        {% endif %}
+
+        <button class="confirm-btn" id="confirmBtn" onclick="confirmDelivery()">
+            <i class="fas fa-check-circle"></i> KONFIRMASI SUDAH DITERIMA
+        </button>
+    </div>
+
+    <div class="success-state" id="successState">
+        <div class="icon">🎉</div>
+        <h3>Pengiriman Selesai!</h3>
+        <p>Pesanan #{{ order.id }} telah dikonfirmasi.<br>Pembeli sudah mendapat notifikasi.</p>
+    </div>
+
+    {% endif %}
+</div>
+
+<!-- Data items disimpan di script tag terpisah agar aman dari XSS -->
+<script id="itemsData" type="application/json">{{ items_json | safe }}</script>
+
+<script>
+    // Parse items dari script tag
+    (function() {
+        const listEl = document.getElementById('itemsList');
+        if (!listEl) return;
+
+        let parsed = {};
+        try {
+            const raw = JSON.parse(document.getElementById('itemsData').textContent);
+            // Backend sudah extract items, jadi raw langsung berisi {nama: {harga, qty, ...}}
+            // Tapi jika masih ada wrapper 'items', extract lagi
+            if (raw && raw.items && typeof raw.items === 'object' && !raw.harga) {
+                parsed = raw.items;
+            } else {
+                parsed = raw || {};
+            }
+        } catch(e) {
+            console.error('Error parsing items:', e);
+            parsed = {};
+        }
+
+        let html = '';
+        let subtotal = 0;
+        for (const [name, d] of Object.entries(parsed)) {
+            if (d && d.qty > 0) {
+                const total = (d.harga || 0) * d.qty;
+                subtotal += total;
+                const catatan = (d.currentNote && d.currentNote !== '-' && d.currentNote !== 'Tanpa catatan')
+                    ? `<div style="font-size:0.75rem;color:#aaa;margin-top:2px;">📝 ${d.currentNote}</div>` : '';
+                html += `<div class="item-row" style="flex-direction:column;align-items:flex-start;gap:2px;">
+                    <div style="display:flex;justify-content:space-between;width:100%;">
+                        <span style="font-weight:600;">${name} <span style="color:#aaa;font-weight:400;">x${d.qty}</span></span>
+                        <span>Rp ${total.toLocaleString('id-ID')}</span>
+                    </div>
+                    ${catatan}
+                </div>`;
+            }
+        }
+
+        if (!html) {
+            listEl.innerHTML = '<div style="color:#888;font-size:0.82rem;text-align:center;padding:8px;">Tidak ada data item.</div>';
+            return;
+        }
+
+        const ongkir  = {{ order.delivery_fee or 0 }};
+        const service = subtotal * 0.10;
+        const tax     = subtotal * 0.11;
+        const grand   = subtotal + service + tax + ongkir;
+
+        html += `<div style="border-top:1px solid #333;margin-top:8px;padding-top:8px;">`;
+        html += `<div class="item-row"><span style="color:#aaa;">Subtotal</span><span>Rp ${subtotal.toLocaleString('id-ID')}</span></div>`;
+        html += `<div class="item-row"><span style="color:#aaa;">Service (10%)</span><span>Rp ${Math.round(service).toLocaleString('id-ID')}</span></div>`;
+        html += `<div class="item-row"><span style="color:#aaa;">Pajak (11%)</span><span>Rp ${Math.round(tax).toLocaleString('id-ID')}</span></div>`;
+        if (ongkir > 0) html += `<div class="item-row"><span style="color:#aaa;">🚴 Ongkir</span><span>Rp ${ongkir.toLocaleString('id-ID')}</span></div>`;
+        html += `</div>`;
+        html += `<div class="total-row"><span>TOTAL</span><span>Rp ${grand.toLocaleString('id-ID')}</span></div>`;
+
+        // Catatan umum dari pembeli
+        const generalNote = "{{ order.note or '' }}";
+        if (generalNote && generalNote.trim()) {
+            html += `<div style="margin-top:10px;background:#1a2a1a;border:1px solid #2d6a4f;border-radius:8px;padding:10px;font-size:0.82rem;color:#aaa;">
+                <b style="color:#52b788;">📝 Catatan Pembeli:</b><br>${generalNote}
+            </div>`;
+        }
+
+        listEl.innerHTML = html;
+    })();
+
+    function confirmDelivery() {
+        if (!confirm('Konfirmasi bahwa pesanan sudah diterima oleh pembeli?')) return;
+        const btn = document.getElementById('confirmBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+
+        fetch(window.location.pathname + '/confirm', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok' || data.status === 'already') {
+                document.getElementById('mainContent').style.display = 'none';
+                document.getElementById('successState').style.display = 'block';
+            } else {
+                alert('Gagal: ' + (data.message || 'Error'));
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> KONFIRMASI SUDAH DITERIMA';
+            }
+        })
+        .catch(() => {
+            alert('Gagal terhubung ke server.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> KONFIRMASI SUDAH DITERIMA';
+        });
+    }
+</script>
+</body>
+</html>

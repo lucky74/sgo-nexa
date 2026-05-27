@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Login &mdash; SGO Multi-Outlet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0F1117;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 30% 40%, rgba(240,165,0,0.08) 0%, transparent 60%),
+                        radial-gradient(ellipse at 70% 60%, rgba(74,29,110,0.15) 0%, transparent 60%);
+        }
+        .card {
+            background: #1E2130;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+        }
+        .logo-wrap { text-align: center; margin-bottom: 32px; }
+        .logo-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, #4A1D6E, #F0A500);
+            border-radius: 18px;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; margin-bottom: 16px;
+        }
+        .logo-wrap h1 { font-size: 1.1rem; font-weight: 700; color: #E8EAF0; }
+        .logo-wrap p { font-size: 0.78rem; color: #6B7280; margin-top: 4px; }
+        .owner-badge {
+            display: inline-block;
+            background: rgba(240,165,0,0.15);
+            color: #F0A500;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+        }
+        .error-box {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.25);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.82rem;
+            color: #FCA5A5;
+            margin-bottom: 18px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 0.72rem; font-weight: 600; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px; }
+        .input-wrap { position: relative; }
+        .input-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #4B5563; font-size: 0.85rem; }
+        .form-input {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 11px 14px 11px 40px;
+            font-size: 0.88rem;
+            color: #E8EAF0;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-input::placeholder { color: #4B5563; }
+        .form-input:focus { border-color: #F0A500; }
+        .btn-login {
+            width: 100%;
+            background: linear-gradient(135deg, #B45309, #F0A500);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 13px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            margin-top: 8px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: opacity 0.2s;
+        }
+        .btn-login:hover { opacity: 0.9; }
+        .btn-login:disabled { opacity: 0.5; cursor: not-allowed; }
+        .footer-text { text-align: center; margin-top: 28px; font-size: 0.72rem; color: #374151; }
+        .back-link { display: block; text-align: center; margin-top: 16px; font-size: 0.78rem; color: #6B7280; text-decoration: none; }
+        .back-link:hover { color: #F0A500; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="logo-wrap">
+        <div class="logo-icon">👑</div>
+        <h1>SGO Multi-Outlet</h1>
+        <p>Sistem Manajemen Restoran</p>
+        <div class="owner-badge">OWNER ACCESS</div>
+    </div>
+
+    {% if error %}
+    <div class="error-box"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="/owner/login" id="loginForm">
+        <div class="form-group">
+            <label class="form-label">Username</label>
+            <div class="input-wrap">
+                <i class="fas fa-user"></i>
+                <input type="text" name="username" class="form-input" placeholder="Username owner..." required autofocus value="{{ username or '' }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-wrap">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password" class="form-input" placeholder="Password..." required>
+            </div>
+        </div>
+        <button type="submit" class="btn-login" id="loginBtn">
+            <i class="fas fa-crown"></i> Masuk sebagai Owner
+        </button>
+    </form>
+
+    <a href="/login" class="back-link"><i class="fas fa-arrow-left"></i> Login sebagai Admin Outlet</a>
+
+    <div class="footer-text">SGO v2.1 © 2026 Sentra Guest OS</div>
+</div>
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function() {
+        const btn = document.getElementById('loginBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memverifikasi...';
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,724 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Pesanan &mdash; {{ restaurant_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4A1D6E; --primary-light: #6B2FA0; --primary-dark: #2D1142;
+            --accent: #F0A500; --sidebar-width: 240px; --bg: #F5F6FA;
+            --card-bg: #FFFFFF; --text: #1A1D23; --text-muted: #6B7280;
+            --border: #E5E7EB; --success: #10B981; --danger: #EF4444;
+            --info: #3B82F6; --warning: #F59E0B;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); font-size: 0.875rem; display: flex; min-height: 100vh; }
+
+        .sidebar { width: var(--sidebar-width); background: var(--primary-dark); min-height: 100vh; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-brand { padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .sidebar-brand .brand-logo { font-size: 1.1rem; font-weight: 700; color: #fff; }
+        .sidebar-brand .brand-sub { font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-top: 2px; }
+        .sidebar-nav { padding: 16px 0; flex: 1; overflow-y: auto; overflow-y: auto; }
+        .nav-section-title { font-size: 0.65rem; font-weight: 600; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1px; padding: 8px 20px 4px; }
+        .nav-item-link { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-item-link:hover, .nav-item-link.active { color: #fff; background: rgba(255,255,255,0.07); border-left-color: var(--accent); }
+        .nav-item-link i { width: 18px; text-align: center; font-size: 0.9rem; }
+        .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.7rem; color: rgba(255,255,255,0.3); }
+
+        .main-content { margin-left: var(--sidebar-width); flex: 1; display: flex; flex-direction: column; }
+        .topbar { background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+        .topbar-title { font-size: 1rem; font-weight: 600; color: var(--text); }
+        .topbar-actions { display: flex; gap: 8px; align-items: center; }
+        .page-body { padding: 24px 28px; }
+
+        .btn-primary-custom { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; text-decoration: none; }
+        .btn-primary-custom:hover { background: var(--primary-light); color: #fff; }
+        .btn-outline-custom { background: transparent; color: var(--text-muted); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; font-size: 0.82rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; text-decoration: none; }
+        .btn-outline-custom:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-outline-custom.active-filter { border-color: var(--primary); color: var(--primary); background: rgba(74,29,110,0.06); font-weight: 600; }
+
+        .filter-bar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+        .filter-bar label { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+        .filter-bar input[type=date] { border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px; font-size: 0.82rem; font-family: 'Inter', sans-serif; color: var(--text); outline: none; }
+
+        .stat-card { background: var(--card-bg); border-radius: 12px; padding: 20px; border: 1px solid var(--border); display: flex; align-items: center; gap: 16px; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+        .stat-icon.purple { background: rgba(74,29,110,0.1); color: var(--primary); }
+        .stat-icon.green  { background: rgba(16,185,129,0.1); color: var(--success); }
+        .stat-icon.gold   { background: rgba(240,165,0,0.1); color: var(--accent); }
+        .stat-icon.blue   { background: rgba(59,130,246,0.1); color: var(--info); }
+        .stat-icon.orange { background: rgba(249,115,22,0.1); color: #F97316; }
+        .stat-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+        .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+
+        .table-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+        .table-card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .table-card-header h6 { font-size: 0.9rem; font-weight: 600; color: var(--text); margin: 0; }
+        .table { margin: 0; font-size: 0.82rem; }
+        .table thead th { background: #FAFAFA; border-bottom: 1px solid var(--border); color: var(--text-muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px; white-space: nowrap; }
+        .table tbody td { padding: 10px 16px; border-bottom: 1px solid #F3F4F6; vertical-align: middle; color: var(--text); }
+        .table tbody tr:last-child td { border-bottom: none; }
+        .table tbody tr:hover td { background: #FAFBFF; }
+
+        /* Status badges */
+        .badge-status { font-size: 0.72rem; font-weight: 600; padding: 4px 10px; border-radius: 20px; display: inline-block; white-space: nowrap; }
+        .badge-pending     { background: rgba(245,158,11,0.12); color: #B45309; }
+        .badge-preparing   { background: rgba(59,130,246,0.12); color: #1D4ED8; }
+        .badge-on_delivery { background: rgba(249,115,22,0.12); color: #C2410C; }
+        .badge-served      { background: rgba(16,185,129,0.12); color: #065F46; }
+        .badge-completed   { background: rgba(16,185,129,0.12); color: #065F46; }
+        .badge-cancelled   { background: rgba(239,68,68,0.12);  color: #B91C1C; }
+
+        /* Order type badge */
+        .badge-dine  { background: rgba(74,29,110,0.1); color: var(--primary); font-size: 0.68rem; font-weight: 600; padding: 2px 7px; border-radius: 20px; }
+        .badge-deliv { background: rgba(249,115,22,0.1); color: #C2410C; font-size: 0.68rem; font-weight: 600; padding: 2px 7px; border-radius: 20px; }
+
+        .status-select { border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; font-size: 0.78rem; font-family: 'Inter', sans-serif; color: var(--text); background: #fff; cursor: pointer; outline: none; }
+        .items-summary { font-size: 0.78rem; color: var(--text-muted); max-width: 180px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .delivery-info { font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; }
+        .delivery-info a { color: var(--info); text-decoration: none; }
+        .delivery-info a:hover { text-decoration: underline; }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .empty-state i { font-size: 3rem; margin-bottom: 16px; opacity: 0.2; display: block; }
+
+        .refresh-indicator { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-muted); }
+        .refresh-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .btn-assign-courier { background: rgba(249,115,22,0.1); color: #C2410C; border: 1px solid rgba(249,115,22,0.3); padding: 4px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 600; cursor: pointer; display: block; width: 100%; transition: background 0.2s; }
+        .btn-assign-courier:hover { background: rgba(249,115,22,0.2); }
+
+        /* Highlight order baru */
+        @keyframes newOrderPulse {
+            0%   { background: rgba(16,185,129,0.15); }
+            50%  { background: rgba(16,185,129,0.05); }
+            100% { background: rgba(16,185,129,0.15); }
+        }
+        .new-order-highlight td { animation: newOrderPulse 1s ease 3; }
+
+        /* Modal assign kurir */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9998; align-items: center; justify-content: center; }
+        .modal-overlay.show { display: flex; }
+        .modal-box { background: #fff; border-radius: 14px; padding: 28px; width: 360px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+        .modal-box h5 { font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: var(--primary); }
+        .modal-box input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; margin-bottom: 16px; font-family: 'Inter', sans-serif; }
+        .modal-box input:focus { border-color: var(--primary); outline: none; }
+        .modal-box .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+        .courier-link-box { background: #F0FDF4; border: 1px solid #86EFAC; border-radius: 8px; padding: 12px; margin-top: 12px; display: none; }
+        .courier-link-box p { font-size: 0.78rem; color: #166534; margin-bottom: 6px; font-weight: 600; }
+        .courier-link-box a { font-size: 0.75rem; color: #15803D; word-break: break-all; }
+        .toast-msg { background: #1A1D23; color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 0.83rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); animation: slideUp 0.3s ease; margin-top: 8px; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">{{ restaurant_name if restaurant_name else 'Restaurant' }}</div>
+        <div class="brand-sub">Restaurant Management</div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Menu</div>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/dashboard{% else %}/dashboard{% endif %}" class="nav-item-link"><i class="fas fa-utensils"></i> Manajemen Menu</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/sales-report{% else %}/sales-report{% endif %}" class="nav-item-link"><i class="fas fa-chart-bar"></i> Laporan Penjualan</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/orders{% else %}/orders{% endif %}" class="nav-item-link active"><i class="fas fa-receipt"></i> Manajemen Pesanan</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/couriers{% else %}/couriers{% endif %}" class="nav-item-link"><i class="fas fa-motorcycle"></i> Manajemen Kurir</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/vouchers{% else %}/vouchers{% endif %}" class="nav-item-link"><i class="fas fa-ticket-alt"></i> Voucher & Promo</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/customers{% else %}/customers{% endif %}" class="nav-item-link"><i class="fas fa-users"></i> Riwayat Pelanggan</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/settings{% else %}/settings{% endif %}" class="nav-item-link"><i class="fas fa-cog"></i> Pengaturan</a>
+        <div class="nav-section-title" style="margin-top:12px;">Akses</div>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}{% else %}/{% endif %}" target="_blank" class="nav-item-link"><i class="fas fa-external-link-alt"></i> Lihat Menu Tamu</a>
+    </nav>
+
+    <div class="sidebar-footer">        <div style="margin-bottom:6px;color:rgba(255,255,255,0.5);font-size:0.72rem;">
+            <i class="fas fa-user-circle" style="margin-right:4px;"></i>
+            {{ username }}
+            <span style="background:rgba(240,165,0,0.2);color:#F0A500;padding:1px 6px;border-radius:10px;font-size:0.65rem;margin-left:4px;">admin</span>
+        </div>
+        SGO v2.1 &copy; {{ current_year }}
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/logout{% else %}/logout{% endif %}" style="display:block;margin-top:8px;color:rgba(255,255,255,0.4);font-size:0.7rem;text-decoration:none;"
+           onmouseover="this.style.color='#EF4444'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
+            <i class="fas fa-sign-out-alt"></i> Keluar
+        </a>
+    </div>
+</aside>
+
+<div class="main-content">
+    <div class="topbar">
+        <span class="topbar-title">Manajemen Pesanan</span>
+        <div class="topbar-actions">
+            <div class="refresh-indicator">
+                <div class="refresh-dot"></div>
+                <span id="refreshCountdown">Auto-refresh 30s</span>
+            </div>
+            <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/dashboard{% else %}/dashboard{% endif %}" class="btn-outline-custom"><i class="fas fa-arrow-left"></i> Dashboard</a>
+        </div>
+    </div>
+
+    <div class="page-body">
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <label><i class="fas fa-calendar-alt me-1"></i> Tanggal:</label>
+            <input type="date" id="dateInput" value="{{ selected_date }}">
+            <button class="btn-primary-custom" onclick="goToDate()"><i class="fas fa-search"></i> Tampilkan</button>
+            <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/orders{% else %}/orders{% endif %}" class="btn-outline-custom">Hari Ini</a>
+            <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
+                <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/orders{% else %}/orders{% endif %}?date={{ selected_date }}" class="btn-outline-custom {% if filter_type == 'all' %}active-filter{% endif %}">Semua</a>
+                <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/orders{% else %}/orders{% endif %}?date={{ selected_date }}&order_type=dine_in" class="btn-outline-custom {% if filter_type == 'dine_in' %}active-filter{% endif %}">🍽️ Dine-in</a>
+                <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/orders{% else %}/orders{% endif %}?date={{ selected_date }}&order_type=delivery" class="btn-outline-custom {% if filter_type == 'delivery' %}active-filter{% endif %}">🚵 Delivery</a>
+            </div>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon purple"><i class="fas fa-receipt"></i></div>
+                    <div><div class="stat-label">Total Pesanan</div><div class="stat-value">{{ total_orders }}</div></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon gold"><i class="fas fa-coins"></i></div>
+                    <div><div class="stat-label">Total Pendapatan</div><div class="stat-value" style="font-size:1.05rem;">Rp {{ "{:,.0f}".format(total_revenue).replace(',', '.') }}</div></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="fas fa-clock"></i></div>
+                    <div><div class="stat-label">Pending / Diproses</div><div class="stat-value">{{ orders | selectattr('status', 'in', ['pending', 'preparing', 'on_delivery']) | list | length }}</div></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon orange"><i class="fas fa-motorcycle"></i></div>
+                    <div><div class="stat-label">Pesanan Delivery</div><div class="stat-value">{{ orders | selectattr('order_type', 'equalto', 'delivery') | list | length }}</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="table-card">
+            <div class="table-card-header">
+                <h6><i class="fas fa-list me-2" style="color:var(--primary)"></i>Daftar Pesanan &mdash; {{ date_display }}</h6>
+                <span style="font-size:0.78rem;color:var(--text-muted);">{{ total_orders }} pesanan</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width:44px">No.</th>
+                            <th style="width:110px">Waktu</th>
+                            <th>Nama / Info</th>
+                            <th style="width:60px" class="text-center">Tipe</th>
+                            <th>Items</th>
+                            <th class="text-end" style="width:130px">Total</th>
+                            <th class="text-center" style="width:120px">Status</th>
+                            <th class="text-center" style="width:170px">Ubah Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr id="order-row-{{ order.id }}">
+                            <td class="text-center text-muted">{{ loop.index }}</td>
+                            <td>
+                                <span style="font-size:0.82rem;font-weight:600;">{{ order.created_at[11:16] if order.created_at|length > 10 else order.created_at }}</span>
+                                <div style="font-size:0.7rem;color:var(--text-muted);">{{ order.created_at[:10] if order.created_at|length > 10 else '' }}</div>
+                            </td>
+                            <td>
+                                <span style="font-weight:600;">{{ order.customer_name or '&mdash;' }}</span>
+                                {% if order.order_type == 'delivery' %}
+                                <div class="delivery-info">
+                                    📱 {{ order.whatsapp or '&mdash;' }}<br>
+                                    📍 <span title="{{ order.delivery_address }}">{{ (order.delivery_address or '&mdash;')[:40] }}{% if order.delivery_address and order.delivery_address|length > 40 %}...{% endif %}</span><br>
+                                    {% if order.delivery_distance %}
+                                    📏 {{ "%.1f"|format(order.delivery_distance) }} km &nbsp;|&nbsp; 🚴 Rp {{ "{:,.0f}".format(order.delivery_fee or 0).replace(',', '.') }}
+                                    {% endif %}
+                                    {% if order.delivery_lat and order.delivery_lng %}
+                                    &nbsp;|&nbsp; <a href="https://www.google.com/maps/dir/{{ restaurant_lat }},{{ restaurant_lng }}/{{ order.delivery_lat }},{{ order.delivery_lng }}" target="_blank"><i class="fas fa-map"></i> Maps</a>
+                                    {% endif %}
+                                </div>
+                                {% else %}
+                                <div style="font-size:0.75rem;color:var(--text-muted);">Meja: <b>{{ order.table_number or '&mdash;' }}</b></div>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if order.order_type == 'delivery' %}
+                                <span class="badge-deliv">🚵</span>
+                                {% else %}
+                                <span class="badge-dine">🍽️</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="items-summary" title="{{ order.items_summary }}">{{ order.items_summary }}</div>
+                                {% if order.note %}<div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;font-style:italic;">{{ order.note[:50] }}</div>{% endif %}
+                            </td>
+                            <td class="text-end">
+                                <span style="font-weight:600;color:var(--primary);">Rp {{ "{:,.0f}".format(order.total_price).replace(',', '.') }}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge-status badge-{{ order.status }}" id="badge-{{ order.id }}">
+                                    {% if order.status == 'pending' %}⏳ Pending
+                                    {% elif order.status == 'preparing' %}🍳 Diproses
+                                    {% elif order.status == 'on_delivery' %}🚴 Dikirim
+                                    {% elif order.status == 'served' %}✅ Disajikan
+                                    {% elif order.status == 'completed' %}✅ Selesai
+                                    {% elif order.status == 'cancelled' %}❌ Dibatalkan
+                                    {% else %}{{ order.status }}{% endif %}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                {% if order.order_type == 'delivery' %}
+                                <select class="status-select" onchange="updateStatus({{ order.id }}, this.value, this)" data-current="{{ order.status }}">
+                                    <option value="pending"     {% if order.status == 'pending'     %}selected{% endif %}>⏳ Pending</option>
+                                    <option value="preparing"   {% if order.status == 'preparing'   %}selected{% endif %}>🍳 Diproses</option>
+                                    <option value="on_delivery" {% if order.status == 'on_delivery' %}selected{% endif %} disabled>🚴 Dikirim (Kurir)</option>
+                                    <option value="completed"   {% if order.status == 'completed'   %}selected{% endif %} disabled>✅ Selesai</option>
+                                    <option value="cancelled"   {% if order.status == 'cancelled'   %}selected{% endif %}>❌ Dibatalkan</option>
+                                </select>
+                                {% if order.status == 'preparing' %}
+                                <button class="btn-assign-courier mt-1" onclick="openAssignCourier({{ order.id }})">
+                                    <i class="fas fa-motorcycle"></i> Assign Kurir
+                                </button>
+                                {% elif order.status == 'on_delivery' and order.courier_name %}
+                                <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">🚴 {{ order.courier_name }}</div>
+                                {% endif %}
+                                {% else %}
+                                <select class="status-select" onchange="updateStatus({{ order.id }}, this.value, this)" data-current="{{ order.status }}">
+                                    <option value="pending"   {% if order.status == 'pending'   %}selected{% endif %}>⏳ Pending</option>
+                                    <option value="preparing" {% if order.status == 'preparing' %}selected{% endif %}>🍳 Diproses</option>
+                                    <option value="served"    {% if order.status == 'served'    %}selected{% endif %}>✅ Disajikan</option>
+                                    <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>❌ Dibatalkan</option>
+                                </select>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="8">
+                            <div class="empty-state">
+                                <i class="fas fa-receipt"></i>
+                                <h5 style="font-weight:600;margin-bottom:8px;">Belum ada pesanan</h5>
+                                <p>Tidak ada pesanan pada tanggal <strong>{{ date_display }}</strong>.</p>
+                            </div>
+                        </td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Modal Assign Kurir -->
+<div class="modal-overlay" id="courierModal">
+    <div class="modal-box">
+        <h5><i class="fas fa-motorcycle me-2"></i>Assign Kurir</h5>
+        <div id="courierListDiv">
+            <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:10px;">Pilih kurir yang tersedia:</p>
+            <div id="courierOptions" style="display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto;margin-bottom:12px;"></div>
+            <p style="font-size:0.75rem;color:var(--text-muted);">Belum ada kurir? <a href="/couriers" style="color:var(--primary);">Tambah kurir di sini</a></p>
+        </div>
+        <div class="courier-link-box" id="courierLinkBox">
+            <p>✅ Kurir berhasil di-assign! Kirim link ini ke kurir:</p>
+            <a id="courierLinkUrl" href="#" target="_blank" style="display:block;margin-bottom:10px;"></a>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button onclick="copyCourierLink()" style="background:var(--success);color:#fff;border:none;padding:7px 12px;border-radius:6px;font-size:0.78rem;cursor:pointer;flex:1;">
+                    <i class="fas fa-copy"></i> Salin Link
+                </button>
+                <button id="waBtn" onclick="bukaWhatsApp()" style="background:#25D366;color:#fff;border:none;padding:7px 12px;border-radius:6px;font-size:0.78rem;cursor:pointer;flex:1;">
+                    <i class="fab fa-whatsapp"></i> Buka WhatsApp
+                </button>
+            </div>
+            <button onclick="closeAssignCourier(true)" style="width:100%;margin-top:8px;background:var(--primary);color:#fff;border:none;padding:8px;border-radius:6px;font-size:0.82rem;font-weight:600;cursor:pointer;">
+                Selesai & Tutup
+            </button>
+        </div>
+        <div class="modal-actions">
+            <button onclick="closeAssignCourier()" style="background:transparent;border:1px solid var(--border);padding:8px 16px;border-radius:8px;font-size:0.82rem;cursor:pointer;">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let _currentCourierOrderId = null;
+    let _currentCourierWa = null;
+    let _reloadTimer = null;
+
+    function openAssignCourier(orderId) {
+        _currentCourierOrderId = orderId;
+        _currentCourierWa = null;
+        if (_reloadTimer) { clearTimeout(_reloadTimer); _reloadTimer = null; }
+        document.getElementById('courierLinkBox').style.display = 'none';
+        document.getElementById('courierListDiv').style.display = 'block';
+        document.getElementById('courierOptions').innerHTML = '<div style="color:var(--text-muted);font-size:0.82rem;">Memuat daftar kurir...</div>';
+        document.getElementById('courierModal').classList.add('show');
+
+        // Load daftar kurir aktif
+        fetch(`${_apiBase}/api/couriers/list`)
+        .then(r => r.json())
+        .then(data => {
+            const container = document.getElementById('courierOptions');
+            if (!data.couriers || data.couriers.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted);font-size:0.82rem;text-align:center;padding:12px;">Belum ada kurir aktif.<br><a href="${_apiBase || ''}/couriers" style="color:var(--primary);">Tambah kurir dulu</a></div>`;
+                return;
+            }
+            container.innerHTML = data.couriers.map(c => `
+                <button onclick="submitAssignCourier('${c.name}', '${c.whatsapp}')"
+                    style="background:#F9FAFB;border:1px solid var(--border);border-radius:8px;padding:10px 14px;text-align:left;cursor:pointer;transition:background 0.2s;font-family:'Inter',sans-serif;"
+                    onmouseover="this.style.background='rgba(74,29,110,0.06)'"
+                    onmouseout="this.style.background='#F9FAFB'">
+                    <div style="font-weight:600;font-size:0.85rem;color:var(--text);">${c.name}</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);">📱 ${c.whatsapp}</div>
+                </button>
+            `).join('');
+        })
+        .catch(() => {
+            document.getElementById('courierOptions').innerHTML = '<div style="color:var(--danger);font-size:0.82rem;">Gagal memuat daftar kurir.</div>';
+        });
+    }
+
+    function closeAssignCourier(doReload) {
+        document.getElementById('courierModal').classList.remove('show');
+        _currentCourierOrderId = null;
+        if (_reloadTimer) { clearTimeout(_reloadTimer); _reloadTimer = null; }
+        if (doReload) location.reload();
+    }
+
+    function bukaWhatsApp() {
+        if (!_currentCourierWa) return;
+        const linkUrl = document.getElementById('courierLinkUrl').textContent;
+        const courierName = document.getElementById('waBtn').dataset.name || 'Kurir';
+        const waNum = _currentCourierWa.replace(/^0/, '62').replace(/\D/g, '');
+        const waMsg = encodeURIComponent(`Halo ${courierName}, ada pesanan antar untuk Anda.\n\nLink konfirmasi pengiriman:\n${linkUrl}`);
+        window.open(`https://wa.me/${waNum}?text=${waMsg}`, '_blank');
+    }
+
+    function submitAssignCourier(courierName, courierWa) {
+        fetch(`${_apiBase}/api/orders/assign-courier/${_currentCourierOrderId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ courier_name: courierName, courier_whatsapp: courierWa })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                _currentCourierWa = courierWa;
+
+                // Tampilkan link box
+                const linkBox = document.getElementById('courierLinkBox');
+                const linkEl  = document.getElementById('courierLinkUrl');
+                linkEl.href = data.courier_url;
+                linkEl.textContent = data.courier_url;
+                document.getElementById('waBtn').dataset.name = courierName;
+                linkBox.style.display = 'block';
+                document.getElementById('courierListDiv').style.display = 'none';
+
+                showToast(`Kurir ${courierName} berhasil di-assign`);
+
+                // Update badge di tabel
+                const badge = document.getElementById(`badge-${_currentCourierOrderId}`);
+                if (badge) { badge.className = 'badge-status badge-on_delivery'; badge.textContent = '🚴 Dikirim'; }
+
+                // Auto reload setelah 30 detik jika admin tidak tutup manual
+                _reloadTimer = setTimeout(() => location.reload(), 30000);
+            } else {
+                showToast(data.message || 'Gagal assign kurir', 'error');
+            }
+        })
+        .catch(() => showToast('Gagal assign kurir', 'error'));
+    }
+
+    function copyCourierLink() {
+        const url = document.getElementById('courierLinkUrl').textContent;
+        // Coba clipboard API dulu, fallback ke execCommand
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url)
+                .then(() => showToast('Link disalin!'))
+                .catch(() => fallbackCopy(url));
+        } else {
+            fallbackCopy(url);
+        }
+    }
+
+    function fallbackCopy(text) {
+        // Fallback: buat textarea sementara
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try {
+            document.execCommand('copy');
+            showToast('Link disalin!');
+        } catch(e) {
+            // Jika semua gagal, tampilkan link agar bisa copy manual
+            prompt('Salin link ini:', text);
+        }
+        document.body.removeChild(ta);
+    }
+
+    function showToast(msg, type='success') {
+        const el = document.createElement('div');
+        el.className = 'toast-msg';
+        el.innerHTML = `<span>${type==='success'?'✅':'❌'}</span><span>${msg}</span>`;
+        document.getElementById('toastContainer').appendChild(el);
+        setTimeout(() => el.remove(), 3000);
+    }
+
+    function updateStatus(orderId, newStatus, selectEl) {
+        const prevStatus = selectEl.dataset.current;
+        selectEl.disabled = true;
+        fetch(`${_apiBase}/api/orders/status/${orderId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                selectEl.dataset.current = newStatus;
+                const badge = document.getElementById(`badge-${orderId}`);
+                if (badge) {
+                    badge.className = `badge-status badge-${newStatus}`;
+                    const labels = {
+                        pending: '⏳ Pending', preparing: '🍳 Diproses',
+                        on_delivery: '🚴 Dikirim', served: '✅ Disajikan',
+                        completed: '✅ Selesai', cancelled: '❌ Dibatalkan'
+                    };
+                    badge.textContent = labels[newStatus] || newStatus;
+                }
+                showToast(`Status pesanan #${orderId} diperbarui`);
+            } else {
+                selectEl.value = prevStatus;
+                showToast('Gagal memperbarui status', 'error');
+            }
+        })
+        .catch(() => { selectEl.value = prevStatus; showToast('Gagal memperbarui status', 'error'); })
+        .finally(() => { selectEl.disabled = false; });
+    }
+
+    function goToDate() {
+        const d = document.getElementById('dateInput').value;
+        const type = new URLSearchParams(window.location.search).get('order_type') || '';
+        if (d) window.location.href = `${_apiBase}/orders?date=${d}${type ? '&order_type='+type : ''}`;
+    }
+    document.getElementById('dateInput').addEventListener('keydown', e => { if (e.key === 'Enter') goToDate(); });
+
+    // â"€â"€ Smart Polling &mdash; update status real-time tanpa full reload â"€â"€
+    const STATUS_LABELS = {
+        pending:     '⏳ Pending',
+        preparing:   '🍳 Diproses',
+        on_delivery: '🚴 Dikirim',
+        served:      '✅ Disajikan',
+        completed:   '✅ Selesai',
+        cancelled:   '❌ Dibatalkan',
+    };
+    const STATUS_CLASSES = {
+        pending:     'badge-pending',
+        preparing:   'badge-preparing',
+        on_delivery: 'badge-on_delivery',
+        served:      'badge-served',
+        completed:   'badge-completed',
+        cancelled:   'badge-cancelled',
+    };
+
+    // Simpan status & ID order yang sudah dirender
+    const _knownStatuses = {};
+    const _knownIds = new Set();
+
+    document.querySelectorAll('[id^="badge-"]').forEach(el => {
+        const id = el.id.replace('badge-', '');
+        _knownStatuses[id] = el.className.replace('badge-status badge-', '').trim();
+        _knownIds.add(id);
+    });
+
+    const _currentDate = document.getElementById('dateInput').value;
+    const _restLat = "{{ restaurant_lat }}";
+    const _restLng = "{{ restaurant_lng }}";
+    const _isOutlet = {{ 'true' if is_outlet else 'false' }};
+    const _outletId = {{ outlet_id if outlet_id else 'null' }};
+    const _apiBase  = _isOutlet ? `/outlet/${_outletId}` : '';
+
+    function formatRp(n) {
+        return 'Rp ' + parseInt(n).toLocaleString('id-ID');
+    }
+
+    function renderNewOrderRow(order, rowNum) {
+        const isDelivery = order.order_type === 'delivery';
+        const time = order.created_at ? order.created_at.substring(11,16) : '';
+        const date = order.created_at ? order.created_at.substring(0,10) : '';
+
+        let infoHtml = `<span style="font-weight:600;">${order.customer_name || '&mdash;'}</span>`;
+        if (isDelivery) {
+            infoHtml += `<div style="font-size:0.72rem;color:var(--text-muted);margin-top:3px;">
+                📱 ${order.whatsapp || '&mdash;'}<br>
+                📍 ${(order.delivery_address || '&mdash;').substring(0,40)}${order.delivery_address && order.delivery_address.length > 40 ? '...' : ''}
+                ${order.delivery_distance ? `<br>📏 ${parseFloat(order.delivery_distance).toFixed(1)} km | 🚴 ${formatRp(order.delivery_fee || 0)}` : ''}
+                ${order.delivery_lat && order.delivery_lng ? `<br><a href="https://www.google.com/maps/dir/${_restLat},${_restLng}/${order.delivery_lat},${order.delivery_lng}" target="_blank" style="color:var(--info)"><i class="fas fa-map"></i> Maps</a>` : ''}
+            </div>`;
+        } else {
+            infoHtml += `<div style="font-size:0.75rem;color:var(--text-muted);">Meja: <b>${order.table_number || '&mdash;'}</b></div>`;
+        }
+
+        const typeBadge = isDelivery
+            ? `<span style="background:rgba(249,115,22,0.1);color:#C2410C;font-size:0.68rem;font-weight:600;padding:2px 7px;border-radius:20px;">🚵</span>`
+            : `<span style="background:rgba(74,29,110,0.1);color:var(--primary);font-size:0.68rem;font-weight:600;padding:2px 7px;border-radius:20px;">🍽️</span>`;
+
+        const statusClass = STATUS_CLASSES[order.status] || '';
+        const statusLabel = STATUS_LABELS[order.status] || order.status;
+
+        let actionHtml = '';
+        if (isDelivery) {
+            actionHtml = `<select class="status-select" onchange="updateStatus(${order.id}, this.value, this)" data-current="${order.status}">
+                <option value="pending" ${order.status==='pending'?'selected':''}>⏳ Pending</option>
+                <option value="preparing" ${order.status==='preparing'?'selected':''}>🍳 Diproses</option>
+                <option value="on_delivery" disabled ${order.status==='on_delivery'?'selected':''}>🚴 Dikirim (Kurir)</option>
+                <option value="completed" disabled ${order.status==='completed'?'selected':''}>✅ Selesai</option>
+                <option value="cancelled" ${order.status==='cancelled'?'selected':''}>❌ Dibatalkan</option>
+            </select>`;
+            if (order.status === 'preparing') {
+                actionHtml += `<button class="btn-assign-courier mt-1" onclick="openAssignCourier(${order.id})"><i class="fas fa-motorcycle"></i> Assign Kurir</button>`;
+            } else if (order.status === 'on_delivery' && order.courier_name) {
+                actionHtml += `<div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">🚴 ${order.courier_name}</div>`;
+            }
+        } else {
+            actionHtml = `<select class="status-select" onchange="updateStatus(${order.id}, this.value, this)" data-current="${order.status}">
+                <option value="pending" ${order.status==='pending'?'selected':''}>⏳ Pending</option>
+                <option value="preparing" ${order.status==='preparing'?'selected':''}>🍳 Diproses</option>
+                <option value="served" ${order.status==='served'?'selected':''}>✅ Disajikan</option>
+                <option value="cancelled" ${order.status==='cancelled'?'selected':''}>❌ Dibatalkan</option>
+            </select>`;
+        }
+
+        return `<tr id="order-row-${order.id}" class="new-order-highlight">
+            <td class="text-center text-muted">${rowNum}</td>
+            <td>
+                <span style="font-size:0.82rem;font-weight:600;">${time}</span>
+                <div style="font-size:0.7rem;color:var(--text-muted);">${date}</div>
+            </td>
+            <td>${infoHtml}</td>
+            <td class="text-center">${typeBadge}</td>
+            <td>
+                <div style="font-size:0.78rem;color:var(--text-muted);max-width:180px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${order.items_summary}</div>
+                ${order.note ? `<div style="font-size:0.7rem;color:var(--text-muted);font-style:italic;">${order.note.substring(0,50)}</div>` : ''}
+            </td>
+            <td class="text-end"><span style="font-weight:600;color:var(--primary);">${formatRp(order.total_price)}</span></td>
+            <td class="text-center">
+                <span class="badge-status ${statusClass}" id="badge-${order.id}">${statusLabel}</span>
+            </td>
+            <td class="text-center">${actionHtml}</td>
+        </tr>`;
+    }
+
+    function pollStatuses() {
+        fetch(`${_apiBase}/api/orders/status-poll?date=${_currentDate}`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status !== 'ok') return;
+
+            const tbody = document.querySelector('.table tbody');
+            let newOrderCount = 0;
+
+            data.orders.forEach((order, idx) => {
+                const id = String(order.id);
+                const newStatus = order.status;
+
+                if (!_knownIds.has(id)) {
+                    // â"€â"€ ORDER BARU &mdash; tambahkan ke tabel â"€â"€
+                    _knownIds.add(id);
+                    _knownStatuses[id] = newStatus;
+                    newOrderCount++;
+
+                    // Hapus empty state jika ada
+                    const emptyRow = tbody.querySelector('.empty-state');
+                    if (emptyRow) emptyRow.closest('tr').remove();
+
+                    // Tambah di atas (pesanan terbaru di atas)
+                    const rowNum = _knownIds.size;
+                    tbody.insertAdjacentHTML('afterbegin', renderNewOrderRow(order, rowNum));
+
+                    // Highlight animasi
+                    setTimeout(() => {
+                        const row = document.getElementById(`order-row-${id}`);
+                        if (row) row.classList.remove('new-order-highlight');
+                    }, 3000);
+
+                } else if (_knownStatuses[id] !== newStatus) {
+                    // â"€â"€ STATUS BERUBAH â"€â"€
+                    _knownStatuses[id] = newStatus;
+
+                    const badge = document.getElementById(`badge-${id}`);
+                    if (badge) {
+                        badge.className = `badge-status ${STATUS_CLASSES[newStatus] || ''}`;
+                        badge.textContent = STATUS_LABELS[newStatus] || newStatus;
+                    }
+
+                    const row = document.getElementById(`order-row-${id}`);
+                    if (row) {
+                        const sel = row.querySelector('.status-select');
+                        if (sel) sel.value = newStatus;
+
+                        if (order.order_type === 'delivery') {
+                            const actionCell = row.querySelector('td:last-child');
+                            if (actionCell) {
+                                const oldBtn  = actionCell.querySelector('.btn-assign-courier');
+                                const oldInfo = actionCell.querySelector('.courier-info-text');
+                                if (oldBtn)  oldBtn.remove();
+                                if (oldInfo) oldInfo.remove();
+
+                                if (newStatus === 'preparing') {
+                                    const btn = document.createElement('button');
+                                    btn.className = 'btn-assign-courier mt-1';
+                                    btn.innerHTML = '<i class="fas fa-motorcycle"></i> Assign Kurir';
+                                    btn.onclick = () => openAssignCourier(order.id);
+                                    actionCell.appendChild(btn);
+                                } else if (newStatus === 'on_delivery' && order.courier_name) {
+                                    const info = document.createElement('div');
+                                    info.className = 'courier-info-text';
+                                    info.style.cssText = 'font-size:0.72rem;color:var(--text-muted);margin-top:4px;';
+                                    info.textContent = `🚴 ${order.courier_name}`;
+                                    actionCell.appendChild(info);
+                                }
+                            }
+                        }
+
+                        if (newStatus === 'completed') showToast(`✅ Pesanan #${id} selesai dikirim!`);
+                        else if (newStatus === 'on_delivery') showToast(`🚴 Pesanan #${id} sedang dikirim kurir`);
+                    }
+                }
+            });
+
+            if (newOrderCount > 0) {
+                showToast(`🔔 ${newOrderCount} pesanan baru masuk!`);
+                // Mainkan suara notifikasi jika browser support
+                try { new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAA...').play(); } catch(e) {}
+            }
+        })
+        .catch(() => {});
+    }
+
+    // Poll setiap 5 detik
+    setInterval(pollStatuses, 5000);
+
+    // Update indikator
+    const countdownEl = document.getElementById('refreshCountdown');
+    countdownEl.textContent = 'Live update aktif';
+</script>
+</body>
+</html>
+
+
+
+
+

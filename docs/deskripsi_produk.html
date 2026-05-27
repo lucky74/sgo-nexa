@@ -1,0 +1,168 @@
+<h1 id="sgo-smart-guest-order">SGO — Smart Guest Order</h1>
+<h2 id="sistem-pos-restoran-berbasis-telegram-bot">Sistem POS Restoran
+Berbasis Telegram Bot</h2>
+<hr />
+<p><strong>Dikembangkan oleh:</strong> <strong>Sentra Guest OS</strong>
+Lucky Zamaludin Malik 📱 WhatsApp: 089639541438 📧 Email:
+sentraguest.os@gmail.com © 2026 Sentra Guest OS. All rights
+reserved.</p>
+<hr />
+<h2 id="apa-itu-sgo">Apa itu SGO?</h2>
+<p>SGO (Smart Guest Order) adalah sistem Point of Sale (POS) modern
+untuk restoran yang memanfaatkan <strong>Telegram Bot</strong> sebagai
+antarmuka utama. Pembeli memesan langsung dari smartphone via Telegram,
+sementara admin dan owner memantau semua aktivitas restoran dari
+dashboard berbasis web yang bisa diakses dari mana saja.</p>
+<p>Tidak perlu aplikasi tambahan. Tidak perlu perangkat khusus. Cukup
+laptop dan koneksi internet.</p>
+<hr />
+<h2 id="mengapa-sgo">Mengapa SGO?</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Fitur</th>
+<th>POS Konvensional</th>
+<th>SGO</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Laporan penjualan</td>
+<td>Harian/bulanan</td>
+<td>Real-time</td>
+</tr>
+<tr class="even">
+<td>Pantau pesanan</td>
+<td>Harus di tempat</td>
+<td>Dari mana saja</td>
+</tr>
+<tr class="odd">
+<td>Notifikasi owner</td>
+<td>❌ Tidak ada</td>
+<td>✅ Via Telegram</td>
+</tr>
+<tr class="even">
+<td>Biaya lisensi</td>
+<td>Rp 5–15 juta/tahun</td>
+<td>Jauh lebih hemat</td>
+</tr>
+<tr class="odd">
+<td>Integrasi delivery</td>
+<td>❌ Biasanya tidak ada</td>
+<td>✅ Terintegrasi</td>
+</tr>
+<tr class="even">
+<td>Notifikasi ke pembeli</td>
+<td>❌ Tidak ada</td>
+<td>✅ Otomatis via Telegram</td>
+</tr>
+<tr class="odd">
+<td>Invoice digital</td>
+<td>❌ Manual</td>
+<td>✅ Otomatis dikirim</td>
+</tr>
+<tr class="even">
+<td>Rating &amp; Review</td>
+<td>❌ Tidak ada</td>
+<td>✅ Terintegrasi</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="fitur-lengkap">Fitur Lengkap</h2>
+<h3 id="untuk-pembeli">🛒 Untuk Pembeli</h3>
+<ul>
+<li>Pesan makan di tempat (Dine-in) atau pesan antar (Delivery) langsung
+dari Telegram</li>
+<li>Tampilan menu digital dengan foto, deskripsi, dan harga</li>
+<li>Deteksi lokasi GPS otomatis untuk delivery</li>
+<li>Kalkulasi ongkos kirim otomatis berdasarkan jarak</li>
+<li>Invoice gambar profesional dikirim ke Telegram setelah pesan</li>
+<li>Notifikasi status pesanan real-time (Diproses → Disajikan →
+Selesai)</li>
+<li>Input kode voucher/diskon saat checkout</li>
+<li>Rating &amp; review menu setelah pesanan selesai</li>
+<li>Panggil pelayan langsung dari aplikasi</li>
+</ul>
+<h3 id="untuk-admin">👨‍💼 Untuk Admin</h3>
+<ul>
+<li>Dashboard manajemen menu (tambah, edit, hapus, aktif/nonaktif)</li>
+<li>Upload foto menu langsung dari dashboard</li>
+<li>Manajemen stok per menu — otomatis nonaktif jika habis</li>
+<li>Notifikasi Telegram jika stok menipis atau habis</li>
+<li>Manajemen pesanan real-time tanpa perlu refresh halaman</li>
+<li>Assign kurir untuk pesanan delivery</li>
+<li>Halaman konfirmasi pengiriman untuk kurir (via link unik)</li>
+<li>Manajemen kurir (tambah, hapus, aktif/nonaktif)</li>
+<li>Buat dan kelola voucher/promo (persen atau nominal)</li>
+<li>Laporan penjualan harian dengan rincian per kategori menu</li>
+<li>Cetak laporan dengan format profesional (kop surat)</li>
+<li>Riwayat pelanggan — data pembelian, menu favorit, total belanja</li>
+<li>Kirim pesan promo langsung ke pelanggan via Telegram</li>
+<li>Backup database otomatis setiap hari jam 02:00 WIB</li>
+<li>Reset data pesanan dengan konfirmasi keamanan</li>
+<li>Ganti password admin dan owner dari dashboard</li>
+<li>Upload QRIS sendiri tanpa bantuan developer</li>
+</ul>
+<h3 id="untuk-owner">👑 Untuk Owner</h3>
+<ul>
+<li>Akses dashboard laporan penjualan dari mana saja</li>
+<li>Laporan harian otomatis dikirim ke Telegram setiap jam 22:00
+WIB</li>
+<li>Informasi: total pesanan, pendapatan, menu terlaris, perbandingan
+kemarin</li>
+<li>Akses read-only — tidak bisa mengubah data operasional</li>
+</ul>
+<h3 id="keamanan">🔐 Keamanan</h3>
+<ul>
+<li>Sistem login dengan 2 level akses (Admin &amp; Owner)</li>
+<li>Session 7 hari — tidak perlu login ulang setiap hari</li>
+<li>Semua halaman admin dilindungi autentikasi</li>
+<li>Password terenkripsi (SHA-256)</li>
+</ul>
+<hr />
+<h2 id="teknologi-yang-digunakan">Teknologi yang Digunakan</h2>
+<ul>
+<li><strong>Backend:</strong> Python + FastAPI</li>
+<li><strong>Database:</strong> SQLite (ringan, tidak perlu server
+database terpisah)</li>
+<li><strong>Bot:</strong> Telegram Bot API + WebApp</li>
+<li><strong>Tunnel:</strong> Cloudflare Tunnel (tidak perlu domain/VPS
+berbayar)</li>
+<li><strong>Frontend:</strong> Bootstrap 5 + Inter Font</li>
+<li><strong>Invoice:</strong> Pillow (Python Imaging Library)</li>
+<li><strong>Scheduler:</strong> APScheduler (backup &amp; laporan
+otomatis)</li>
+</ul>
+<hr />
+<h2 id="paket-harga">Paket Harga</h2>
+<h3 id="paket-setup">Paket Setup</h3>
+<p><strong>Rp 4.500.000</strong> — Bayar sekali - Instalasi dan
+konfigurasi sistem - Setup Telegram Bot khusus restoran - Input menu
+awal (maks. 30 item) - Training admin (1 sesi, 2 jam) - Garansi bug 30
+hari</p>
+<h3 id="paket-bulanan-maintenance">Paket Bulanan (Maintenance)</h3>
+<p><strong>Rp 1.200.000 / bulan</strong> - Update fitur terbaru - Backup
+data bulanan - Support via WhatsApp (jam kerja) - Prioritas perbaikan
+bug</p>
+<h3 id="paket-jual-putus">Paket Jual Putus</h3>
+<p><strong>Rp 10.000.000</strong> — Hak milik penuh - Source code
+lengkap diserahkan - Dokumentasi teknis - Training 1 hari penuh - Tidak
+ada biaya bulanan - Pengembangan selanjutnya tanggung jawab klien</p>
+<hr />
+<h2 id="persyaratan-sistem">Persyaratan Sistem</h2>
+<p><strong>Minimum:</strong> - Laptop/PC dengan RAM 4GB - Koneksi
+internet stabil - Sistem operasi: Windows 10/11 atau Linux/Ubuntu -
+Python 3.10 atau lebih baru</p>
+<p><strong>Tidak diperlukan:</strong> - Server VPS berbayar - Domain
+berbayar - Database server terpisah - Aplikasi mobile khusus</p>
+<hr />
+<h2 id="kontak-informasi">Kontak &amp; Informasi</h2>
+<p><strong>Sentra Guest OS</strong> Pengembang Sistem Digital untuk UMKM
+&amp; Restoran</p>
+<p>📱 WhatsApp: <a href="https://wa.me/6289639541438">089639541438</a>
+📧 Email: sentraguest.os@gmail.com © 2026 Sentra Guest OS. All rights
+reserved.</p>
+<hr />
+<p><em>Dokumen ini bersifat rahasia dan hanya untuk keperluan presentasi
+kepada calon klien.</em></p>

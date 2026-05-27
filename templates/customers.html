@@ -1,0 +1,361 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Pelanggan &mdash; {{ restaurant_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4A1D6E; --primary-light: #6B2FA0; --primary-dark: #2D1142;
+            --accent: #F0A500; --sidebar-width: 240px; --bg: #F5F6FA;
+            --card-bg: #FFFFFF; --text: #1A1D23; --text-muted: #6B7280;
+            --border: #E5E7EB; --success: #10B981; --danger: #EF4444; --info: #3B82F6;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); font-size: 0.875rem; display: flex; min-height: 100vh; }
+
+        .sidebar { width: var(--sidebar-width); background: var(--primary-dark); min-height: 100vh; position: fixed; top: 0; left: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-brand { padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .sidebar-brand .brand-logo { font-size: 1.1rem; font-weight: 700; color: #fff; }
+        .sidebar-brand .brand-sub { font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-top: 2px; }
+        .sidebar-nav { padding: 16px 0; flex: 1; overflow-y: auto; }
+        .nav-section-title { font-size: 0.65rem; font-weight: 600; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1px; padding: 8px 20px 4px; }
+        .nav-item-link { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-item-link:hover, .nav-item-link.active { color: #fff; background: rgba(255,255,255,0.07); border-left-color: var(--accent); }
+        .nav-item-link i { width: 18px; text-align: center; font-size: 0.9rem; }
+        .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.7rem; color: rgba(255,255,255,0.3); }
+
+        .main-content { margin-left: var(--sidebar-width); flex: 1; display: flex; flex-direction: column; }
+        .topbar { background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+        .topbar-title { font-size: 1rem; font-weight: 600; color: var(--text); }
+        .page-body { padding: 24px 28px; }
+
+        .stat-card { background: var(--card-bg); border-radius: 12px; padding: 20px; border: 1px solid var(--border); display: flex; align-items: center; gap: 16px; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+        .stat-icon.purple { background: rgba(74,29,110,0.1); color: var(--primary); }
+        .stat-icon.green  { background: rgba(16,185,129,0.1); color: var(--success); }
+        .stat-icon.gold   { background: rgba(240,165,0,0.1); color: var(--accent); }
+        .stat-icon.blue   { background: rgba(59,130,246,0.1); color: var(--info); }
+        .stat-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+        .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+
+        .table-card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+        .table-card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+        .table-card-header h6 { font-size: 0.9rem; font-weight: 600; color: var(--text); margin: 0; }
+        .table { margin: 0; font-size: 0.82rem; }
+        .table thead th { background: #FAFAFA; border-bottom: 1px solid var(--border); color: var(--text-muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 16px; white-space: nowrap; }
+        .table tbody td { padding: 12px 16px; border-bottom: 1px solid #F3F4F6; vertical-align: middle; }
+        .table tbody tr:last-child td { border-bottom: none; }
+        .table tbody tr:hover td { background: #FAFBFF; }
+
+        .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-light)); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.85rem; font-weight: 700; flex-shrink: 0; }
+        .customer-name { font-weight: 600; color: var(--text); }
+        .customer-sub { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+
+        .badge-loyal { background: rgba(240,165,0,0.12); color: #B45309; font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+        .badge-regular { background: rgba(74,29,110,0.1); color: var(--primary); font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+        .badge-new { background: rgba(16,185,129,0.1); color: var(--success); font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+
+        .btn-primary-custom { background: var(--primary); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s; text-decoration: none; }
+        .btn-primary-custom:hover { background: var(--primary-light); color: #fff; }
+        .btn-outline-custom { background: transparent; color: var(--text-muted); border: 1px solid var(--border); padding: 8px 14px; border-radius: 8px; font-size: 0.82rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; text-decoration: none; }
+        .btn-outline-custom:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-send-sm { background: rgba(37,211,102,0.1); color: #15803D; border: 1px solid rgba(37,211,102,0.3); padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+        .btn-send-sm:hover { background: rgba(37,211,102,0.2); }
+        .btn-send-sm:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .search-input { border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px 7px 34px; font-size: 0.82rem; background: #F9FAFB url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center; width: 220px; outline: none; }
+        .search-input:focus { border-color: var(--primary); }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .empty-state i { font-size: 3rem; margin-bottom: 16px; opacity: 0.2; display: block; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9998; align-items: center; justify-content: center; }
+        .modal-overlay.show { display: flex; }
+        .modal-box { background: #fff; border-radius: 16px; padding: 28px; width: 440px; max-width: 95vw; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+        .modal-box h5 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; color: var(--primary); }
+        .modal-box .modal-sub { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 18px; }
+        .modal-box textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; font-family: 'Inter', sans-serif; resize: vertical; min-height: 100px; outline: none; }
+        .modal-box textarea:focus { border-color: var(--primary); }
+        .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+
+        /* Detail panel */
+        .detail-panel { background: #F9FAFB; border-radius: 10px; padding: 14px; margin-top: 12px; font-size: 0.78rem; }
+        .detail-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #F3F4F6; }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { color: var(--text-muted); }
+        .detail-val { font-weight: 600; color: var(--text); }
+
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; }
+        .toast-msg { background: #1A1D23; color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 0.83rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); animation: slideUp 0.3s ease; margin-top: 8px; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .fav-items { display: flex; flex-wrap: wrap; gap: 4px; }
+        .fav-item { background: rgba(74,29,110,0.08); color: var(--primary); font-size: 0.68rem; padding: 2px 7px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-logo">{{ restaurant_name }}</div>
+        <div class="brand-sub">Restaurant Management</div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Menu</div>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/dashboard{% else %}/dashboard{% endif %}" class="nav-item-link"><i class="fas fa-utensils"></i> Manajemen Menu</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/sales-report{% else %}/sales-report{% endif %}" class="nav-item-link"><i class="fas fa-chart-bar"></i> Laporan Penjualan</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/orders{% else %}/orders{% endif %}" class="nav-item-link"><i class="fas fa-receipt"></i> Manajemen Pesanan</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/couriers{% else %}/couriers{% endif %}" class="nav-item-link"><i class="fas fa-motorcycle"></i> Manajemen Kurir</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/vouchers{% else %}/vouchers{% endif %}" class="nav-item-link"><i class="fas fa-ticket-alt"></i> Voucher & Promo</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/customers{% else %}/customers{% endif %}" class="nav-item-link active"><i class="fas fa-users"></i> Riwayat Pelanggan</a>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/settings{% else %}/settings{% endif %}" class="nav-item-link"><i class="fas fa-cog"></i> Pengaturan</a>
+        <div class="nav-section-title" style="margin-top:12px;">Akses</div>
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}{% else %}/{% endif %}" target="_blank" class="nav-item-link"><i class="fas fa-external-link-alt"></i> Lihat Menu Tamu</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div style="margin-bottom:6px;color:rgba(255,255,255,0.5);font-size:0.72rem;">
+            <i class="fas fa-user-circle" style="margin-right:4px;"></i>
+            {{ username }}
+            <span style="background:rgba(240,165,0,0.2);color:#F0A500;padding:1px 6px;border-radius:10px;font-size:0.65rem;margin-left:4px;">admin</span>
+        </div>
+        SGO v2.1 &copy; {{ current_year }}
+        <a href="{% if is_outlet %}/outlet/{{ outlet_id }}/logout{% else %}/logout{% endif %}" style="display:block;margin-top:8px;color:rgba(255,255,255,0.4);font-size:0.7rem;text-decoration:none;"
+           onmouseover="this.style.color='#EF4444'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
+            <i class="fas fa-sign-out-alt"></i> Keluar
+        </a>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-content">
+    <div class="topbar">
+        <span class="topbar-title">Riwayat Pelanggan</span>
+    </div>
+
+    <div class="page-body">
+
+        <!-- Stat Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon purple"><i class="fas fa-users"></i></div>
+                    <div><div class="stat-label">Total Pelanggan</div><div class="stat-value">{{ customers|length }}</div></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon gold"><i class="fas fa-crown"></i></div>
+                    <div><div class="stat-label">Pelanggan Setia (≥5x)</div><div class="stat-value">{{ customers|selectattr('total_orders', 'ge', 5)|list|length }}</div></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="fas fa-telegram"></i></div>
+                    <div><div class="stat-label">Terhubung Telegram</div><div class="stat-value">{{ customers|selectattr('telegram_id')|list|length }}</div></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="fas fa-motorcycle"></i></div>
+                    <div><div class="stat-label">Pelanggan Delivery</div><div class="stat-value">{{ customers|selectattr('delivery_count', 'gt', 0)|list|length }}</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-card">
+            <div class="table-card-header">
+                <h6><i class="fas fa-users me-2" style="color:var(--primary)"></i>Daftar Pelanggan</h6>
+                <input type="text" class="search-input" id="searchInput" placeholder="Cari nama pelanggan..." onkeyup="filterTable()">
+            </div>
+            <div class="table-responsive">
+                <table class="table" id="customerTable">
+                    <thead>
+                        <tr>
+                            <th>Pelanggan</th>
+                            <th class="text-center">Total Pesanan</th>
+                            <th class="text-center">Dine-in</th>
+                            <th class="text-center">Delivery</th>
+                            <th class="text-end">Total Belanja</th>
+                            <th>Menu Favorit</th>
+                            <th>Terakhir Pesan</th>
+                            <th class="text-center">Kirim Pesan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in customers %}
+                        <tr>
+                            <td>
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <div class="avatar">{{ c.name[0].upper() if c.name else '?' }}</div>
+                                    <div>
+                                        <div class="customer-name">{{ c.name }}</div>
+                                        <div class="customer-sub">
+                                            {% if c.whatsapp %}<span>📱 {{ c.whatsapp }}</span>{% endif %}
+                                            {% if c.telegram_id %}<span style="margin-left:4px;">✈️ Telegram</span>{% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <strong>{{ c.total_orders }}</strong>
+                                {% if c.total_orders >= 10 %}
+                                <span class="badge-loyal ms-1">⭐ Setia</span>
+                                {% elif c.total_orders >= 5 %}
+                                <span class="badge-regular ms-1">Regular</span>
+                                {% else %}
+                                <span class="badge-new ms-1">Baru</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">{{ c.dine_in_count }}</td>
+                            <td class="text-center">{{ c.delivery_count }}</td>
+                            <td class="text-end">
+                                <strong style="color:var(--primary);">Rp {{ "{:,.0f}".format(c.total_spent).replace(',', '.') }}</strong>
+                            </td>
+                            <td>
+                                <div class="fav-items">
+                                    {% for item in c.fav_items[:3] %}
+                                    <span class="fav-item">{{ item }}</span>
+                                    {% endfor %}
+                                    {% if not c.fav_items %}<span class="text-muted">&mdash;</span>{% endif %}
+                                </div>
+                            </td>
+                            <td style="font-size:0.78rem;color:var(--text-muted);">{{ c.last_order[:10] if c.last_order else '&mdash;' }}</td>
+                            <td class="text-center">
+                                {% if c.telegram_id %}
+                                <button class="btn-send-sm" onclick="openSendMsg({{ c.telegram_id }}, '{{ c.name|replace("'", "\\'") }}')">
+                                    <i class="fab fa-telegram"></i> Kirim
+                                </button>
+                                {% else %}
+                                <span style="font-size:0.72rem;color:var(--text-muted);">Tidak ada Telegram</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="8">
+                            <div class="empty-state">
+                                <i class="fas fa-users"></i>
+                                <h5 style="font-weight:600;margin-bottom:8px;">Belum ada data pelanggan</h5>
+                                <p>Data pelanggan akan muncul setelah ada pesanan masuk.</p>
+                            </div>
+                        </td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal Kirim Pesan -->
+<div class="modal-overlay" id="msgModal">
+    <div class="modal-box">
+        <h5><i class="fab fa-telegram me-2"></i>Kirim Pesan ke Pelanggan</h5>
+        <p class="modal-sub" id="msgTarget">Kepada: &mdash;</p>
+        <textarea id="msgText" placeholder="Tulis pesan promo atau informasi untuk pelanggan...&#10;&#10;Contoh: Halo! Ada promo spesial hari ini, diskon 20% untuk semua menu. Gunakan kode: PROMO20 🎉"></textarea>
+        <div style="margin-top:8px;font-size:0.75rem;color:var(--text-muted);">
+            <i class="fas fa-info-circle"></i> Pesan akan dikirim via Telegram Bot ke pelanggan.
+        </div>
+        <div class="modal-actions">
+            <button onclick="closeSendMsg()" style="background:transparent;border:1px solid var(--border);padding:8px 16px;border-radius:8px;font-size:0.82rem;cursor:pointer;">Batal</button>
+            <button onclick="doSendMsg()" class="btn-primary-custom" id="sendMsgBtn">
+                <i class="fab fa-telegram"></i> Kirim Pesan
+            </button>
+        </div>
+        <div id="msgResult" style="margin-top:10px;font-size:0.82rem;display:none;"></div>
+    </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let _currentTgId = null;
+    let _currentName = '';
+    const API_BASE = {% if is_outlet %}`/outlet/{{ outlet_id }}`{% else %}``{% endif %};
+
+    function filterTable() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('#customerTable tbody tr').forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+        });
+    }
+
+    function openSendMsg(tgId, name) {
+        _currentTgId = tgId;
+        _currentName = name;
+        document.getElementById('msgTarget').textContent = `Kepada: ${name}`;
+        document.getElementById('msgText').value = '';
+        document.getElementById('msgResult').style.display = 'none';
+        document.getElementById('msgModal').classList.add('show');
+        setTimeout(() => document.getElementById('msgText').focus(), 100);
+    }
+
+    function closeSendMsg() {
+        document.getElementById('msgModal').classList.remove('show');
+        _currentTgId = null;
+    }
+
+    function doSendMsg() {
+        const msg = document.getElementById('msgText').value.trim();
+        if (!msg) {
+            document.getElementById('msgResult').style.cssText = 'display:block;color:#B91C1C;';
+            document.getElementById('msgResult').textContent = '❌ Pesan tidak boleh kosong.';
+            return;
+        }
+
+        const btn = document.getElementById('sendMsgBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+        document.getElementById('msgResult').style.display = 'none';
+
+        fetch(`${API_BASE}/api/customers/send-message`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ telegram_id: _currentTgId, message: msg, name: _currentName })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                document.getElementById('msgResult').style.cssText = 'display:block;color:#065F46;';
+                document.getElementById('msgResult').textContent = `✅ Pesan berhasil dikirim ke ${_currentName}!`;
+                showToast(`Pesan terkirim ke ${_currentName}`);
+                setTimeout(() => closeSendMsg(), 1500);
+            } else {
+                document.getElementById('msgResult').style.cssText = 'display:block;color:#B91C1C;';
+                document.getElementById('msgResult').textContent = `❌ Gagal: ${data.message}`;
+            }
+        })
+        .catch(() => {
+            document.getElementById('msgResult').style.cssText = 'display:block;color:#B91C1C;';
+            document.getElementById('msgResult').textContent = '❌ Gagal menghubungi server.';
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fab fa-telegram"></i> Kirim Pesan';
+        });
+    }
+
+    function showToast(msg, type='success') {
+        const el = document.createElement('div');
+        el.className = 'toast-msg';
+        el.innerHTML = `<span>${type==='success'?'✅':'❌'}</span><span>${msg}</span>`;
+        document.getElementById('toastContainer').appendChild(el);
+        setTimeout(() => el.remove(), 3500);
+    }
+
+    // Tutup modal klik di luar
+    document.getElementById('msgModal').addEventListener('click', function(e) {
+        if (e.target === this) closeSendMsg();
+    });
+</script>
+</body>
+</html>
+
